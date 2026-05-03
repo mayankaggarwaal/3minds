@@ -5,180 +5,172 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>3Minds — Multi-Agent Deliberation</title>
 <style>
-:root {
-  --bg: #0a0f1e;
-  --surface: #111827;
-  --surface2: #1a2236;
-  --border: rgba(99,102,241,.25);
-  --accent: #6366f1;
-  --accent2: #06b6d4;
-  --accent3: #10b981;
-  --warn: #f59e0b;
-  --danger: #ef4444;
-  --text: #e2e8f0;
-  --muted: #64748b;
-  --solver-color: #6366f1;
-  --critic-color: #f59e0b;
-  --validator-color: #10b981;
+:root{
+  --bg:#07090f;--surface:#0e1117;--surface2:#151b26;--surface3:#1c2333;
+  --border:rgba(99,102,241,.2);--border2:rgba(255,255,255,.06);
+  --accent:#6366f1;--accent2:#06b6d4;--accent3:#10b981;
+  --warn:#f59e0b;--danger:#ef4444;
+  --text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8;
+  --solver:#818cf8;--critic:#fbbf24;--validator:#34d399;
+  --r:12px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;font-size:14px;}
 
-/* NAV */
-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;
-  border-bottom:1px solid var(--border);background:rgba(10,15,30,.9);
-  position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+/* ── NAV ── */
+nav{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;
+  border-bottom:1px solid var(--border2);background:rgba(7,9,15,.85);
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);}
 .nav-brand{display:flex;align-items:center;gap:10px;}
-.nav-logo{width:36px;height:36px;border-radius:10px;
+.nav-logo{width:34px;height:34px;border-radius:9px;font-weight:900;font-size:.9rem;color:#fff;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:#fff;}
-.nav-title{font-weight:800;font-size:1.1rem;letter-spacing:-.02em;}
-.nav-sub{font-size:.75rem;color:var(--muted);}
-.nav-links{display:flex;gap:8px;}
-.nav-link{padding:7px 16px;border-radius:8px;font-size:.85rem;font-weight:600;
-  text-decoration:none;color:var(--muted);transition:.15s;}
-.nav-link:hover{color:var(--text);background:var(--surface2);}
-.nav-link.active{color:#fff;background:var(--accent);}
+  display:flex;align-items:center;justify-content:center;letter-spacing:-.03em;}
+.nav-title{font-weight:800;font-size:1rem;letter-spacing:-.02em;}
+.nav-sub{font-size:.7rem;color:var(--muted);margin-top:1px;}
+.nav-pills{display:flex;gap:6px;}
+.npill{padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;
+  text-decoration:none;color:var(--muted);border:1px solid transparent;transition:.12s;}
+.npill:hover{color:var(--text);border-color:var(--border);}
+.npill.active{color:#fff;background:var(--accent);border-color:var(--accent);}
 
-/* HERO */
-.hero{text-align:center;padding:80px 20px 60px;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 0%,rgba(99,102,241,.18) 0%,transparent 65%);pointer-events:none;}
-.hero-badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:.78rem;font-weight:700;
-  letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px;
-  background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);color:var(--accent);}
-.hero h1{font-size:clamp(2.2rem,6vw,4rem);font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:16px;}
-.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.hero p{font-size:1.1rem;color:var(--muted);max-width:560px;margin:0 auto 36px;line-height:1.7;}
-.hero-agents{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:48px;}
-.agent-pill{display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:20px;font-size:.88rem;font-weight:600;border:1px solid;}
-.agent-pill.solver{color:var(--solver-color);border-color:rgba(99,102,241,.4);background:rgba(99,102,241,.08);}
-.agent-pill.critic{color:var(--critic-color);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08);}
-.agent-pill.validator{color:var(--validator-color);border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.08);}
-.agent-dot{width:8px;height:8px;border-radius:50%;background:currentColor;}
+/* ── LAYOUT ── */
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 80px;}
 
-/* MAIN LAYOUT */
-.main{max-width:1100px;margin:0 auto;padding:0 20px 80px;}
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);
+  padding:22px 24px;margin-bottom:16px;}
+.card-head{display:flex;align-items:center;gap:8px;margin-bottom:18px;font-weight:700;font-size:.9rem;}
+.cicon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
 
-/* CARD */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 28px;margin-bottom:20px;}
-.card-title{font-size:1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-.card-title .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+/* ── INPUTS ── */
+label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+input[type=text],input[type=password],textarea,select{
+  width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;
+  padding:9px 12px;color:var(--text);font-size:.85rem;font-family:inherit;outline:none;transition:.12s;}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.12);}
+textarea{resize:vertical;min-height:90px;line-height:1.55;}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2364748b'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;}
 
-/* INPUT AREA */
-.input-group{display:flex;flex-direction:column;gap:10px;}
-.input-group label{font-size:.83rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;
-  padding:14px 16px;color:var(--text);font-size:.95rem;font-family:inherit;resize:vertical;
-  min-height:100px;outline:none;transition:.15s;}
-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.15);}
-input[type=text],input[type=password]{width:100%;background:var(--surface2);border:1px solid var(--border);
-  border-radius:10px;padding:10px 14px;color:var(--text);font-size:.88rem;font-family:inherit;outline:none;transition:.15s;}
-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.15);}
+/* ── SETTINGS GRID ── */
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.sg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:640px){.sg,.sg2{grid-template-columns:1fr;}}
+.key-row{display:flex;gap:6px;align-items:center;}
+.key-row input{flex:1;}
+.eye-btn{padding:8px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;
+  cursor:pointer;color:var(--muted);font-size:.85rem;transition:.12s;}
+.eye-btn:hover{color:var(--text);border-color:var(--accent);}
+.hint{font-size:.7rem;color:var(--muted);margin-top:4px;}
 
-/* CONTROLS ROW */
-.controls-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;}
-.btn{padding:10px 24px;border:none;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;transition:.15s;}
+/* ── SECTION SEPARATOR ── */
+.section-sep{border:none;border-top:1px solid var(--border2);margin:6px 0 14px;}
+
+/* ── PROVIDER TOGGLE ── */
+.provider-toggle{display:flex;gap:6px;margin-bottom:14px;}
+.ptab{padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;
+  background:var(--surface2);border:1px solid var(--border2);color:var(--muted);transition:.12s;}
+.ptab.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* ── RUN AREA ── */
+.run-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px;}
+.btn{padding:9px 22px;border:none;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;transition:.15s;font-family:inherit;}
 .btn:active{transform:scale(.97);}
-.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
-.btn-primary:hover{opacity:.9;}
-.btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+.btn-run{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+.btn-run:hover{opacity:.9;}
+.btn-ghost{background:var(--surface2);color:var(--muted2);border:1px solid var(--border2);}
 .btn-ghost:hover{color:var(--text);border-color:var(--accent);}
 .btn:disabled{opacity:.4;cursor:not-allowed;}
-select{background:var(--surface2);border:1px solid var(--border);border-radius:10px;
-  padding:10px 14px;color:var(--text);font-size:.88rem;outline:none;cursor:pointer;}
-.cycle-label{font-size:.83rem;color:var(--muted);}
+.cycles-sel{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.78rem;font-weight:600;}
+.cycles-sel select{width:auto;padding:7px 28px 7px 10px;}
 
-/* PIPELINE FLOW */
-.pipeline{display:flex;align-items:center;gap:0;margin:24px 0;overflow-x:auto;padding-bottom:4px;}
-.pipeline-step{flex:1;min-width:160px;background:var(--surface2);border:1px solid var(--border);
-  border-radius:12px;padding:16px;text-align:center;position:relative;transition:.3s;}
-.pipeline-step.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(99,102,241,.2),0 0 20px rgba(99,102,241,.15);}
-.pipeline-step.done-solver{border-color:var(--solver-color);}
-.pipeline-step.done-critic{border-color:var(--critic-color);}
-.pipeline-step.done-validator{border-color:var(--validator-color);}
-.pipeline-arrow{padding:0 8px;color:var(--muted);font-size:1.2rem;flex-shrink:0;}
-.step-icon{font-size:1.6rem;margin-bottom:6px;}
-.step-name{font-size:.83rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
-.step-status{font-size:.75rem;color:var(--muted);}
-.step-status.thinking{color:var(--accent);animation:pulse 1.2s infinite;}
-.step-status.done{color:var(--accent3);}
-.step-status.error{color:var(--danger);}
-@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+/* ── PIPELINE ── */
+.pipeline{display:flex;align-items:center;gap:4px;margin-bottom:16px;overflow-x:auto;padding:2px;}
+.pstep{flex:1;min-width:140px;background:var(--surface2);border:1px solid var(--border2);
+  border-radius:10px;padding:14px 12px;text-align:center;transition:.25s;}
+.pstep.active{border-color:var(--accent);box-shadow:0 0 0 1px rgba(99,102,241,.25),0 0 18px rgba(99,102,241,.12);}
+.pstep.done-solver{border-color:var(--solver);}
+.pstep.done-critic{border-color:var(--critic);}
+.pstep.done-validator{border-color:var(--validator);}
+.parr{color:var(--muted);font-size:1rem;padding:0 4px;flex-shrink:0;}
+.pstep-icon{font-size:1.4rem;margin-bottom:4px;}
+.pstep-name{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.pstep-model{font-size:.65rem;color:var(--muted);margin-bottom:3px;}
+.pstep-status{font-size:.72rem;color:var(--muted);}
+.pstep-status.thinking{color:var(--accent);animation:pulse 1.2s infinite;}
+.pstep-status.done{color:var(--validator);}
+.pstep-status.error{color:var(--danger);}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
 
-/* CYCLE TABS */
-.cycle-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
-.cycle-tab{padding:6px 16px;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;
-  background:var(--surface2);border:1px solid var(--border);color:var(--muted);transition:.15s;}
-.cycle-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+/* ── LOG ── */
+.log-box{background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+  padding:10px 14px;font-family:'JetBrains Mono','Cascadia Code',monospace;font-size:.72rem;
+  color:var(--muted);max-height:120px;overflow-y:auto;line-height:1.9;}
+.ll{margin:0;}.ll.info{color:var(--accent2);}.ll.ok{color:var(--validator);}.ll.warn{color:var(--warn);}.ll.err{color:var(--danger);}
 
-/* AGENT OUTPUT CARDS */
-.agent-card{border-radius:12px;padding:20px;margin-bottom:14px;border:1px solid;}
-.agent-card.solver{background:rgba(99,102,241,.06);border-color:rgba(99,102,241,.25);}
-.agent-card.critic{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.25);}
-.agent-card.validator{background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.25);}
-.agent-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.agent-name{font-weight:800;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;}
-.agent-name.solver{color:var(--solver-color);}
-.agent-name.critic{color:var(--critic-color);}
-.agent-name.validator{color:var(--validator-color);}
-.verdict-badge{padding:3px 12px;border-radius:20px;font-size:.75rem;font-weight:700;text-transform:uppercase;}
-.verdict-approved{background:rgba(16,185,129,.2);color:var(--accent3);}
-.verdict-needs_revision{background:rgba(245,158,11,.2);color:var(--warn);}
-.verdict-rejected{background:rgba(239,68,68,.2);color:var(--danger);}
-.score-badge{padding:3px 12px;border-radius:20px;font-size:.78rem;font-weight:700;
-  background:rgba(99,102,241,.2);color:var(--accent);}
-.agent-field{margin-bottom:10px;}
-.field-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-  color:var(--muted);margin-bottom:4px;}
-.field-value{font-size:.9rem;color:var(--text);line-height:1.6;}
-.field-list{list-style:none;padding:0;}
-.field-list li{font-size:.88rem;color:var(--text);padding:3px 0 3px 12px;position:relative;line-height:1.5;}
-.field-list li::before{content:'→';position:absolute;left:0;color:var(--muted);}
-.confidence-bar{height:6px;border-radius:3px;background:var(--surface2);margin-top:6px;overflow:hidden;}
-.confidence-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s;}
+/* ── CYCLE TABS ── */
+.ctabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.ctab{padding:5px 16px;border-radius:20px;font-size:.78rem;font-weight:700;cursor:pointer;
+  background:var(--surface2);border:1px solid var(--border2);color:var(--muted);transition:.12s;}
+.ctab.on{background:var(--accent);color:#fff;border-color:transparent;}
+.cycle-badge{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;padding:2px 8px;border-radius:10px;
+  background:rgba(16,185,129,.15);color:var(--validator);margin-left:auto;}
 
-/* FINAL ANSWER */
-.final-answer{background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(6,182,212,.1));
-  border:1px solid rgba(16,185,129,.3);border-radius:14px;padding:24px;margin-top:20px;}
-.final-label{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-  color:var(--accent3);margin-bottom:10px;}
-.final-text{font-size:1rem;line-height:1.7;color:var(--text);}
+/* ── AGENT CARDS ── */
+.agents-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+@media(max-width:800px){.agents-row{grid-template-columns:1fr;}}
+.acard{border-radius:10px;padding:16px;border:1px solid;display:flex;flex-direction:column;gap:10px;}
+.acard.solver{background:rgba(129,140,248,.05);border-color:rgba(129,140,248,.2);}
+.acard.critic{background:rgba(251,191,36,.05);border-color:rgba(251,191,36,.2);}
+.acard.validator{background:rgba(52,211,153,.05);border-color:rgba(52,211,153,.2);}
+.acard-head{display:flex;align-items:center;justify-content:space-between;}
+.acard-name{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;}
+.acard-name.solver{color:var(--solver);}
+.acard-name.critic{color:var(--critic);}
+.acard-name.validator{color:var(--validator);}
+.conf-ring{position:relative;width:38px;height:38px;flex-shrink:0;}
+.conf-ring svg{transform:rotate(-90deg);}
+.conf-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;}
 
-/* STATUS LOG */
-.status-log{background:var(--surface2);border-radius:10px;padding:14px 16px;
-  font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);
-  max-height:140px;overflow-y:auto;line-height:1.8;}
-.log-line{margin:0;}
-.log-line.info{color:var(--accent2);}
-.log-line.ok{color:var(--accent3);}
-.log-line.warn{color:var(--warn);}
-.log-line.err{color:var(--danger);}
+/* Fields */
+.afield{display:flex;flex-direction:column;gap:3px;}
+.aflabel{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+.afval{font-size:.82rem;color:var(--text);line-height:1.55;}
+.afval.pre{white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:.78rem;
+  background:var(--surface2);border-radius:6px;padding:8px 10px;max-height:200px;overflow-y:auto;}
 
-/* SETTINGS */
-.settings-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-@media(max-width:600px){.settings-row{grid-template-columns:1fr;}}
-.key-toggle{cursor:pointer;color:var(--muted);font-size:.8rem;margin-top:6px;display:inline-block;}
-.key-toggle:hover{color:var(--text);}
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:.72rem;font-weight:600;line-height:1.4;}
+.chip.good{background:rgba(52,211,153,.12);color:var(--validator);border:1px solid rgba(52,211,153,.2);}
+.chip.bad{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.18);}
+.chip.neutral{background:rgba(148,163,184,.1);color:var(--muted2);border:1px solid rgba(148,163,184,.15);}
+.chip.suggest{background:rgba(99,102,241,.1);color:#a5b4fc;border:1px solid rgba(99,102,241,.18);}
 
-/* FEATURES GRID */
-.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:32px;}
-.feature{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:22px 18px;}
-.feature-icon{font-size:1.6rem;margin-bottom:10px;}
-.feature h3{font-size:.95rem;font-weight:700;margin-bottom:6px;}
-.feature p{font-size:.83rem;color:var(--muted);line-height:1.5;}
+/* Verdict */
+.verdict{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:6px;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;}
+.verdict.approved{background:rgba(52,211,153,.15);color:var(--validator);}
+.verdict.needs_revision{background:rgba(251,191,36,.15);color:var(--warn);}
+.verdict.rejected{background:rgba(239,68,68,.12);color:var(--danger);}
+.score-pill{padding:3px 10px;border-radius:6px;font-size:.75rem;font-weight:800;background:rgba(99,102,241,.15);color:var(--solver);}
 
-/* EMPTY STATE */
-.empty{text-align:center;padding:48px 20px;color:var(--muted);}
-.empty-icon{font-size:3rem;margin-bottom:12px;opacity:.4;}
-.empty p{font-size:.9rem;}
+/* ── FINAL ANSWER ── */
+.final{background:linear-gradient(135deg,rgba(52,211,153,.07),rgba(6,182,212,.07));
+  border:1px solid rgba(52,211,153,.25);border-radius:12px;padding:22px 24px;margin-top:4px;}
+.final-label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--validator);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.final-body{font-size:.92rem;line-height:1.75;color:var(--text);}
 
-/* SPINNER */
+/* ── SPINNER ── */
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;
-  border-radius:50%;animation:spin .6s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);
+  border-top-color:#fff;border-radius:50%;animation:spin .5s linear infinite;vertical-align:middle;margin-right:6px;}
 
-footer{text-align:center;padding:40px 20px;color:var(--muted);font-size:.83rem;border-top:1px solid var(--border);}
+/* ── EMPTY ── */
+.empty{text-align:center;padding:44px 20px;color:var(--muted);}
+.empty-icon{font-size:2.8rem;margin-bottom:10px;opacity:.35;}
+
+footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.75rem;border-top:1px solid var(--border2);}
 footer a{color:var(--accent);text-decoration:none;}
 </style>
 </head>
@@ -192,485 +184,549 @@ footer a{color:var(--accent);text-decoration:none;}
       <div class="nav-sub">Multi-agent deliberation</div>
     </div>
   </div>
-  <div class="nav-links">
-    <a class="nav-link active" href="#deliberate">Deliberate</a>
-    <a class="nav-link" href="#how">How it works</a>
-    <a class="nav-link" href="https://github.com/mayankaggarwaal/3minds" target="_blank">GitHub</a>
+  <div class="nav-pills">
+    <a class="npill active" href="#">Deliberate</a>
+    <a class="npill" href="https://github.com/mayankaggarwaal/3minds" target="_blank">GitHub ↗</a>
   </div>
 </nav>
 
-<div class="hero">
-  <div class="hero-badge">Powered by Gemini AI</div>
-  <h1>Three minds.<br><span>One answer.</span></h1>
-  <p>A multi-agent deliberation engine where a <strong>Solver</strong>, <strong>Critic</strong>, and <strong>Validator</strong> collaborate in cycles to reach the best possible answer to any problem.</p>
-  <div class="hero-agents">
-    <div class="agent-pill solver"><div class="agent-dot"></div>Solver — proposes solutions</div>
-    <div class="agent-pill critic"><div class="agent-dot"></div>Critic — finds weaknesses</div>
-    <div class="agent-pill validator"><div class="agent-dot"></div>Validator — scores &amp; decides</div>
+<div class="wrap">
+
+<!-- ══════ SETTINGS ══════ -->
+<div class="card">
+  <div class="card-head">
+    <div class="cicon" style="background:rgba(99,102,241,.12);color:var(--accent)">⚙️</div>
+    Settings
   </div>
-</div>
 
-<div class="main">
-
-  <!-- SETTINGS -->
-  <div class="card" id="settings-card">
-    <div class="card-title">
-      <div class="icon" style="background:rgba(99,102,241,.15);color:var(--accent)">⚙</div>
-      Settings
+  <div class="sg2" style="margin-bottom:14px;">
+    <div>
+      <label>Gemini API Key</label>
+      <div class="key-row">
+        <input type="password" id="apiKey" placeholder="AIza…  (saved in browser)"/>
+        <button class="eye-btn" onclick="toggleKey()" title="Show/hide">👁</button>
+      </div>
+      <div class="hint">Key never leaves your browser · saved in localStorage</div>
     </div>
-    <div class="settings-row">
-      <div>
-        <div class="input-group">
-          <label>Gemini API Key</label>
-          <input type="password" id="apiKey" placeholder="Paste your Gemini API key here…"/>
-        </div>
-        <span class="key-toggle" onclick="toggleKey()">👁 show / hide</span>
-      </div>
-      <div>
-        <div class="input-group">
-          <label>Model</label>
-          <select id="modelSelect">
-            <option value="gemini-2.5-flash" selected>gemini-2.5-flash (free · fast)</option>
-            <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite (free · lightest)</option>
-            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro (free · 5 RPM)</option>
-          </select>
-        </div>
-      </div>
+    <div>
+      <label>Ollama URL <span style="color:var(--muted);font-weight:400;text-transform:none;">(optional fallback)</span></label>
+      <input type="text" id="ollamaUrl" placeholder="http://localhost:11434" value="http://localhost:11434"/>
+      <div class="hint">Used when Gemini fails or as primary provider below</div>
     </div>
   </div>
 
-  <!-- INPUT -->
-  <div class="card" id="deliberate">
-    <div class="card-title">
-      <div class="icon" style="background:rgba(6,182,212,.15);color:var(--accent2)">💬</div>
-      Problem Statement
+  <label style="margin-bottom:8px;">Primary Provider</label>
+  <div class="provider-toggle" id="providerToggle">
+    <button class="ptab on" data-p="gemini" onclick="setProvider('gemini')">Gemini</button>
+    <button class="ptab" data-p="ollama" onclick="setProvider('ollama')">Ollama</button>
+    <button class="ptab" data-p="auto" onclick="setProvider('auto')">Auto (Gemini → Ollama)</button>
+  </div>
+
+  <hr class="section-sep"/>
+
+  <label style="margin-bottom:8px;">Model per role</label>
+  <div class="sg">
+    <div>
+      <label>🧠 Solver</label>
+      <select id="solverModel">
+        <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+        <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
+        <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+        <option value="ollama">Ollama (local)</option>
+      </select>
     </div>
-    <div class="input-group">
-      <label>Describe the problem you want the three minds to deliberate on</label>
-      <textarea id="problemInput" placeholder="e.g. Design a system for matching freelancers to projects that minimizes mismatched expectations and maximizes both quality and speed of delivery.">Design a system for matching freelancers to projects that minimizes mismatched expectations and maximizes both quality and speed of delivery.</textarea>
+    <div>
+      <label>🔍 Critic</label>
+      <select id="criticModel">
+        <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+        <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
+        <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+        <option value="ollama">Ollama (local)</option>
+      </select>
     </div>
-    <div class="controls-row">
-      <button class="btn btn-primary" id="runBtn" onclick="startDeliberation()">
-        Run Deliberation
-      </button>
-      <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
-      <span class="cycle-label">Cycles:</span>
-      <select id="cyclesSelect">
-        <option value="1">1 cycle</option>
-        <option value="2" selected>2 cycles</option>
-        <option value="3">3 cycles</option>
+    <div>
+      <label>✅ Validator</label>
+      <select id="validatorModel">
+        <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+        <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
+        <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+        <option value="ollama">Ollama (local)</option>
       </select>
     </div>
   </div>
 
-  <!-- PIPELINE STATUS -->
-  <div class="card" id="pipelineCard" style="display:none">
-    <div class="card-title">
-      <div class="icon" style="background:rgba(16,185,129,.15);color:var(--accent3)">⚡</div>
-      <span id="pipelineTitle">Running deliberation…</span>
-    </div>
-    <div class="pipeline" id="pipeline">
-      <div class="pipeline-step" id="step-solver">
-        <div class="step-icon">🧠</div>
-        <div class="step-name">Solver</div>
-        <div class="step-status" id="status-solver">Waiting</div>
-      </div>
-      <div class="pipeline-arrow">→</div>
-      <div class="pipeline-step" id="step-critic">
-        <div class="step-icon">🔍</div>
-        <div class="step-name">Critic</div>
-        <div class="step-status" id="status-critic">Waiting</div>
-      </div>
-      <div class="pipeline-arrow">→</div>
-      <div class="pipeline-step" id="step-validator">
-        <div class="step-icon">✅</div>
-        <div class="step-name">Validator</div>
-        <div class="step-status" id="status-validator">Waiting</div>
-      </div>
-    </div>
-    <div class="status-log" id="statusLog"></div>
-  </div>
+  <hr class="section-sep"/>
 
-  <!-- RESULTS -->
-  <div id="resultsSection" style="display:none">
-    <div class="card">
-      <div class="card-title">
-        <div class="icon" style="background:rgba(16,185,129,.15);color:var(--accent3)">📋</div>
-        Results
-        <span id="verdictBadge" style="margin-left:auto"></span>
-      </div>
-      <div class="cycle-tabs" id="cycleTabs"></div>
-      <div id="cycleContent"></div>
-    </div>
+  <div>
+    <label>Ollama model name <span style="color:var(--muted);font-weight:400;text-transform:none;">(for Ollama roles)</span></label>
+    <input type="text" id="ollamaModel" placeholder="llama3.2" value="llama3.2" style="max-width:240px;"/>
   </div>
-
-  <!-- HOW IT WORKS -->
-  <div id="how" style="margin-top:48px">
-    <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:8px;">How it works</h2>
-    <p style="color:var(--muted);margin-bottom:24px;font-size:.95rem;">Three AI agents collaborate in structured cycles, each with a distinct role and perspective.</p>
-    <div class="features">
-      <div class="feature">
-        <div class="feature-icon">🧠</div>
-        <h3>Solver</h3>
-        <p>Proposes a solution on cycle 1. On later cycles, revises it based on the Critic's feedback and Validator's score.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🔍</div>
-        <h3>Critic</h3>
-        <p>Rigorously challenges the Solver. Surfaces weaknesses, missing edge cases, and concrete improvement suggestions.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">⚖️</div>
-        <h3>Validator</h3>
-        <p>Scores the solution 0-10, decides <em>approved / needs revision / rejected</em>, and writes the final answer.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🔄</div>
-        <h3>Cycles</h3>
-        <p>Each cycle the solution improves. If approved early, the pipeline stops. All history is preserved.</p>
-      </div>
-    </div>
-  </div>
-
 </div>
+
+<!-- ══════ PROBLEM INPUT ══════ -->
+<div class="card">
+  <div class="card-head">
+    <div class="cicon" style="background:rgba(6,182,212,.12);color:var(--accent2)">💬</div>
+    Problem Statement
+  </div>
+  <div style="margin-bottom:6px;"><label>What should the three minds deliberate on?</label></div>
+  <textarea id="problemInput" placeholder="e.g. Design a scalable notification system for a social app with 10M users…"></textarea>
+  <div class="run-row">
+    <button class="btn btn-run" id="runBtn" onclick="startDeliberation()">▶ Run Deliberation</button>
+    <button class="btn btn-ghost" onclick="clearAll()">✕ Clear</button>
+    <div class="cycles-sel">
+      <span>Cycles</span>
+      <select id="cyclesSelect">
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ PIPELINE STATUS ══════ -->
+<div class="card" id="pipelineCard" style="display:none">
+  <div class="card-head">
+    <div class="cicon" style="background:rgba(16,185,129,.12);color:var(--validator)">⚡</div>
+    <span id="pipelineTitle">Running…</span>
+    <span id="cycleIndicator" style="margin-left:auto;font-size:.75rem;color:var(--muted);font-weight:400;"></span>
+  </div>
+  <div class="pipeline">
+    <div class="pstep" id="step-solver">
+      <div class="pstep-icon">🧠</div>
+      <div class="pstep-name">Solver</div>
+      <div class="pstep-model" id="model-solver"></div>
+      <div class="pstep-status" id="status-solver">Waiting</div>
+    </div>
+    <div class="parr">→</div>
+    <div class="pstep" id="step-critic">
+      <div class="pstep-icon">🔍</div>
+      <div class="pstep-name">Critic</div>
+      <div class="pstep-model" id="model-critic"></div>
+      <div class="pstep-status" id="status-critic">Waiting</div>
+    </div>
+    <div class="parr">→</div>
+    <div class="pstep" id="step-validator">
+      <div class="pstep-icon">✅</div>
+      <div class="pstep-name">Validator</div>
+      <div class="pstep-model" id="model-validator"></div>
+      <div class="pstep-status" id="status-validator">Waiting</div>
+    </div>
+  </div>
+  <div class="log-box" id="statusLog"></div>
+</div>
+
+<!-- ══════ RESULTS ══════ -->
+<div id="resultsSection" style="display:none">
+  <div class="card">
+    <div class="card-head">
+      <div class="cicon" style="background:rgba(16,185,129,.12);color:var(--validator)">📋</div>
+      Results
+      <span id="topBadges" style="margin-left:auto;display:flex;gap:6px;align-items:center;"></span>
+    </div>
+    <div class="ctabs" id="cycleTabs"></div>
+    <div id="cycleContent"></div>
+    <div id="finalSection"></div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
 
 <footer>
   Built by <a href="https://github.com/mayankaggarwaal" target="_blank">mayankaggarwaal</a> ·
-  <a href="https://github.com/mayankaggarwaal/3minds" target="_blank">View on GitHub</a> ·
-  Powered by Gemini
+  <a href="https://github.com/mayankaggarwaal/3minds" target="_blank">View on GitHub</a>
 </footer>
 
 <script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+let provider = "gemini";
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+(function init(){
+  const k = localStorage.getItem("gemini_api_key");
+  if(k) document.getElementById("apiKey").value = k;
+  const ou = localStorage.getItem("ollama_url");
+  if(ou) document.getElementById("ollamaUrl").value = ou;
+  const om = localStorage.getItem("ollama_model");
+  if(om) document.getElementById("ollamaModel").value = om;
+  document.getElementById("apiKey").addEventListener("change", e => localStorage.setItem("gemini_api_key", e.target.value));
+  document.getElementById("ollamaUrl").addEventListener("change", e => localStorage.setItem("ollama_url", e.target.value));
+  document.getElementById("ollamaModel").addEventListener("change", e => localStorage.setItem("ollama_model", e.target.value));
+  const savedProv = localStorage.getItem("provider");
+  if(savedProv) setProvider(savedProv);
+  updateModelLabels();
+})();
 
 function toggleKey(){
   const k = document.getElementById("apiKey");
   k.type = k.type === "password" ? "text" : "password";
 }
 
-// Persist API key in localStorage
-(function(){
-  const stored = localStorage.getItem("gemini_api_key");
-  if(stored) document.getElementById("apiKey").value = stored;
-  document.getElementById("apiKey").addEventListener("change", function(){
-    localStorage.setItem("gemini_api_key", this.value);
-  });
-})();
+function setProvider(p){
+  provider = p;
+  localStorage.setItem("provider", p);
+  document.querySelectorAll(".ptab").forEach(b => b.classList.toggle("on", b.dataset.p === p));
+}
 
+function updateModelLabels(){
+  ["solver","critic","validator"].forEach(role => {
+    const sel = document.getElementById(role+"Model");
+    const val = sel ? sel.value : "gemini-2.5-flash";
+    const lbl = val === "ollama" ? document.getElementById("ollamaModel").value || "llama3.2" : val;
+    const el = document.getElementById("model-"+role);
+    if(el) el.textContent = lbl;
+  });
+}
+document.querySelectorAll("#solverModel,#criticModel,#validatorModel,#ollamaModel").forEach(el => {
+  el.addEventListener("change", updateModelLabels);
+});
+
+// ── LOG ─────────────────────────────────────────────────────────────────────
 function log(msg, type="info"){
   const el = document.getElementById("statusLog");
   const line = document.createElement("div");
-  line.className = `log-line ${type}`;
+  line.className = "ll " + type;
   line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
   el.appendChild(line);
   el.scrollTop = el.scrollHeight;
 }
 
+// ── PIPELINE STATUS ─────────────────────────────────────────────────────────
 function setStep(role, status){
-  const el = document.getElementById(`status-${role}`);
-  const step = document.getElementById(`step-${role}`);
-  el.className = "step-status " + status;
-  if(status === "thinking") el.textContent = "Thinking…";
-  else if(status === "done") el.textContent = "Done ✓";
-  else if(status === "error") el.textContent = "Error ✗";
-  else el.textContent = "Waiting";
-  step.className = "pipeline-step" + (status === "thinking" ? " active" : status === "done" ? ` done-${role}` : "");
+  const st = document.getElementById("status-"+role);
+  const step = document.getElementById("step-"+role);
+  st.className = "pstep-status " + status;
+  st.textContent = status==="thinking"?"Thinking…":status==="done"?"Done ✓":status==="error"?"Error ✗":"Waiting";
+  step.className = "pstep" + (status==="thinking"?" active":status==="done"?` done-${role}`:"");
 }
 
-async function callGemini(prompt, retryCount = 0){
-  const key   = document.getElementById("apiKey").value.trim();
-  const model = document.getElementById("modelSelect").value;
-  if(!key) throw new Error("API key is missing — add it in Settings");
+// ── OLLAMA CALL ─────────────────────────────────────────────────────────────
+async function callOllama(prompt){
+  const url    = (document.getElementById("ollamaUrl").value.trim() || "http://localhost:11434") + "/api/chat";
+  const model  = document.getElementById("ollamaModel").value.trim() || "llama3.2";
+  const body   = { model, messages:[{role:"user",content:prompt}], stream:false, format:"json" };
+  const resp   = await fetch(url, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  if(!resp.ok) throw new Error(`Ollama ${resp.status}: ${resp.statusText}`);
+  const data = await resp.json();
+  return data.message?.content || "";
+}
 
-  const url = `${GEMINI_BASE}/${model}:generateContent?key=${key}`;
+// ── GEMINI CALL ─────────────────────────────────────────────────────────────
+async function callGemini(prompt, modelId, retryCount=0){
+  const key = document.getElementById("apiKey").value.trim();
+  if(!key) throw new Error("Gemini API key missing — paste it in Settings");
+  const url  = `${GEMINI_BASE}/${modelId}:generateContent?key=${key}`;
   const body = {
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.7, maxOutputTokens: 4096, responseMimeType: "application/json" }
+    contents:[{role:"user",parts:[{text:prompt}]}],
+    generationConfig:{temperature:0.7,maxOutputTokens:4096,responseMimeType:"application/json"}
   };
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
+  const resp = await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
 
-  if(resp.status === 429 && retryCount < 4){
+  if(resp.status===429 && retryCount<4){
     const errData = await resp.json().catch(()=>({}));
-    const msg = errData?.error?.message || "";
-    // Parse "retry in Xs" from the error message
-    const retryMatch = msg.match(/retry in ([\d.]+)s/i);
-    const waitSec = retryMatch ? Math.ceil(parseFloat(retryMatch[1])) + 2 : Math.min(60, 10 * Math.pow(2, retryCount));
-    log(`⏳ Rate limited — retrying in ${waitSec}s (attempt ${retryCount+1}/4)…`, "warn");
-    // Show countdown
-    for(let s = waitSec; s > 0; s--){
-      await new Promise(r => setTimeout(r, 1000));
-      if(s % 5 === 0 || s <= 5) log(`   ⏱ ${s}s remaining…`, "info");
+    const msg = errData?.error?.message||"";
+    const m = msg.match(/retry in ([\d.]+)s/i);
+    const wait = m ? Math.ceil(parseFloat(m[1]))+2 : Math.min(60,10*Math.pow(2,retryCount));
+    log(`⏳ Rate limited — retrying in ${wait}s (${retryCount+1}/4)…`,"warn");
+    for(let s=wait;s>0;s--){
+      await new Promise(r=>setTimeout(r,1000));
+      if(s%5===0||s<=5) log(`   ⏱ ${s}s…`,"info");
     }
-    log(`↩️ Retrying now…`, "info");
-    return callGemini(prompt, retryCount + 1);
+    return callGemini(prompt,modelId,retryCount+1);
   }
-
   if(!resp.ok){
-    const err = await resp.json().catch(()=>({}));
-    throw new Error(`Gemini ${resp.status}: ${err?.error?.message || resp.statusText}`);
+    const err=await resp.json().catch(()=>({}));
+    throw new Error(`Gemini ${resp.status}: ${err?.error?.message||resp.statusText}`);
   }
   const data = await resp.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return data.candidates?.[0]?.content?.parts?.[0]?.text||"";
 }
 
-function parseJSON(text, role){
-  // Strip markdown fences
-  let t = text.trim()
-    .replace(/^```json\s*/i,"").replace(/^```\s*/,"").replace(/\s*```$/,"").trim();
-  // Direct parse
-  try{ return JSON.parse(t); }catch(e){}
-  // Find outermost { }
-  const start = t.indexOf("{");
-  const end   = t.lastIndexOf("}");
-  if(start !== -1 && end > start){
-    try{ return JSON.parse(t.slice(start, end+1)); }catch(e){}
-  }
-  // Greedy scan — find largest valid JSON object
-  for(let i = start; i <= end && i !== -1; i++){
-    if(t[i] !== "{") continue;
-    for(let j = end; j > i; j--){
-      if(t[j] !== "}") continue;
-      try{ return JSON.parse(t.slice(i,j+1)); }catch(e){}
+// ── DISPATCH (per role + provider) ──────────────────────────────────────────
+async function callModel(prompt, role){
+  const roleModelSel = document.getElementById(role+"Model");
+  const roleModelVal = roleModelSel ? roleModelSel.value : "gemini-2.5-flash";
+
+  // Explicit Ollama for this role
+  if(roleModelVal === "ollama") return callOllama(prompt);
+
+  const prov = provider;
+  if(prov === "ollama") return callOllama(prompt);
+
+  if(prov === "auto"){
+    try{ return await callGemini(prompt, roleModelVal); }
+    catch(e){
+      log(`Gemini failed (${e.message}) — falling back to Ollama…`,"warn");
+      return callOllama(prompt);
     }
   }
-  // Last resort: wrap raw text as a minimal valid object
-  log(`⚠️ JSON parse failed for ${role||"agent"} — using raw text fallback`, "warn");
-  const fallbacks = {
-    solver:    {role:"solver",   cycle:0, solution:text, reasoning:"(raw)",  changes_from_previous:"N/A", confidence:5},
-    critic:    {role:"critic",   cycle:0, strengths:[], weaknesses:[text],   missing_cases:[], improvement_suggestions:[], overall_critique:text},
-    validator: {role:"validator",cycle:0, verdict:"needs_revision", score:5, criteria_met:[], criteria_failed:[], rationale:text, final_answer:text}
-  };
-  return fallbacks[role] || {role:"unknown", raw:text};
+  // gemini primary
+  return callGemini(prompt, roleModelVal);
 }
 
-const SOLVER_SYS = `You are the Solver agent in a three-minds deliberation system.
-Produce the best possible solution to the given problem.
-On cycle 1 you only see the raw problem. On later cycles use the Critic and Validator feedback to improve.
-Respond ONLY with a JSON object:
-{"role":"solver","cycle":<int>,"solution":"<full solution>","reasoning":"<step-by-step reasoning>","changes_from_previous":"<changes or N/A>","confidence":<0-10>}`;
-
-const CRITIC_SYS = `You are the Critic agent in a three-minds deliberation system.
-Rigorously challenge the Solver's solution. Be constructive.
-Respond ONLY with a JSON object:
-{"role":"critic","cycle":<int>,"strengths":["..."],"weaknesses":["..."],"missing_cases":["..."],"improvement_suggestions":["..."],"overall_critique":"<summary>"}`;
-
-const VALIDATOR_SYS = `You are the Validator agent in a three-minds deliberation system.
-Evaluate the solution against the problem and the Critic's feedback. Decide approved/needs_revision/rejected.
-Respond ONLY with a JSON object:
-{"role":"validator","cycle":<int>,"verdict":"approved"|"needs_revision"|"rejected","score":<0-10>,"criteria_met":["..."],"criteria_failed":["..."],"rationale":"<explanation>","final_answer":"<best answer in plain language>"}`;
-
-function buildSolverPrompt(problem, cycle, history){
-  let p = SOLVER_SYS + "\n\n## Problem\n\n" + problem;
-  if(history.length){
-    p += "\n\n## Previous cycle feedback\n";
-    history.forEach(h=>{
-      p += `\n### Cycle ${h.cycle} Critic:\n${JSON.stringify(h.critic,null,2)}`;
-      p += `\n### Cycle ${h.cycle} Validator:\n${JSON.stringify(h.validator,null,2)}`;
-    });
+// ── JSON PARSER ──────────────────────────────────────────────────────────────
+function parseJSON(text, role){
+  let t = text.trim().replace(/^```json\s*/i,"").replace(/^```\s*/,"").replace(/\s*```$/,"").trim();
+  try{ return JSON.parse(t); }catch(e){}
+  const start=t.indexOf("{"), end=t.lastIndexOf("}");
+  if(start!==-1&&end>start){
+    try{ return JSON.parse(t.slice(start,end+1)); }catch(e){}
+    for(let i=start;i<=end;i++){
+      if(t[i]!=="{") continue;
+      for(let j=end;j>i;j--){
+        if(t[j]!=="}") continue;
+        try{ return JSON.parse(t.slice(i,j+1)); }catch(e){}
+      }
+    }
   }
-  p += `\n\n## Task\nProduce your ${cycle===1?"initial":"revised"} solution for cycle ${cycle}.`;
+  log(`⚠️ JSON fallback for ${role}`,"warn");
+  const fb={
+    solver:{role:"solver",cycle:0,solution:text,reasoning:"(raw)",changes_from_previous:"N/A",confidence:5},
+    critic:{role:"critic",cycle:0,strengths:[],weaknesses:[text],missing_cases:[],improvement_suggestions:[],overall_critique:text},
+    validator:{role:"validator",cycle:0,verdict:"needs_revision",score:5,criteria_met:[],criteria_failed:[],rationale:text,final_answer:text}
+  };
+  return fb[role]||{role:"unknown",raw:text};
+}
+
+// ── PROMPTS ─────────────────────────────────────────────────────────────────
+const SOLVER_SYS=`You are the Solver agent in a three-minds deliberation system. Produce the best possible solution. On cycle 1 address the raw problem. On later cycles incorporate Critic and Validator feedback. Respond ONLY with JSON:
+{"role":"solver","cycle":<int>,"solution":"<full solution>","reasoning":"<step-by-step>","changes_from_previous":"<changes or N/A>","confidence":<0-10>}`;
+const CRITIC_SYS=`You are the Critic agent. Rigorously challenge the Solver. Respond ONLY with JSON:
+{"role":"critic","cycle":<int>,"strengths":["..."],"weaknesses":["..."],"missing_cases":["..."],"improvement_suggestions":["..."],"overall_critique":"<summary>"}`;
+const VALIDATOR_SYS=`You are the Validator agent. Score the solution, decide verdict, write final answer. Respond ONLY with JSON:
+{"role":"validator","cycle":<int>,"verdict":"approved|needs_revision|rejected","score":<0-10>,"criteria_met":["..."],"criteria_failed":["..."],"rationale":"<explanation>","final_answer":"<plain language best answer>"}`;
+
+function buildSolverPrompt(problem,cycle,history){
+  let p=SOLVER_SYS+"\n\n## Problem\n\n"+problem;
+  if(history.length){p+="\n\n## Previous feedback\n";history.forEach(h=>{p+=`\nCycle ${h.cycle} Critic: ${JSON.stringify(h.critic)}\nCycle ${h.cycle} Validator: ${JSON.stringify(h.validator)}`});}
+  p+=`\n\nProduce cycle ${cycle} ${cycle===1?"initial":"revised"} solution.`;
   return p;
 }
-
-function buildCriticPrompt(problem, cycle, solver){
-  return CRITIC_SYS + "\n\n## Problem\n\n" + problem +
-    `\n\n## Solver solution (cycle ${cycle})\n\n${JSON.stringify(solver,null,2)}\n\n## Task\nCritique the solution.`;
+function buildCriticPrompt(problem,cycle,solver){
+  return CRITIC_SYS+"\n\n## Problem\n\n"+problem+`\n\n## Solver (cycle ${cycle})\n\n${JSON.stringify(solver)}\n\nCritique now.`;
+}
+function buildValidatorPrompt(problem,cycle,solver,critic){
+  return VALIDATOR_SYS+"\n\n## Problem\n\n"+problem+
+    `\n\n## Solver (cycle ${cycle})\n${JSON.stringify(solver)}\n\n## Critic (cycle ${cycle})\n${JSON.stringify(critic)}\n\nValidate now.`;
 }
 
-function buildValidatorPrompt(problem, cycle, solver, critic){
-  return VALIDATOR_SYS + "\n\n## Problem\n\n" + problem +
-    `\n\n## Solver (cycle ${cycle})\n\n${JSON.stringify(solver,null,2)}` +
-    `\n\n## Critic (cycle ${cycle})\n\n${JSON.stringify(critic,null,2)}\n\n## Task\nValidate and give your verdict.`;
-}
-
-let allHistory = [];
+// ── MAIN DELIBERATION ────────────────────────────────────────────────────────
+let allHistory=[];
 
 async function startDeliberation(){
-  const problem = document.getElementById("problemInput").value.trim();
-  const cycles  = parseInt(document.getElementById("cyclesSelect").value);
-  if(!problem){ alert("Please enter a problem statement."); return; }
+  const problem=document.getElementById("problemInput").value.trim();
+  const cycles=parseInt(document.getElementById("cyclesSelect").value);
+  if(!problem){alert("Enter a problem first.");return;}
 
-  allHistory = [];
-  document.getElementById("pipelineCard").style.display = "block";
-  document.getElementById("resultsSection").style.display = "none";
-  document.getElementById("statusLog").innerHTML = "";
-  document.getElementById("cycleTabs").innerHTML = "";
-  document.getElementById("cycleContent").innerHTML = "";
-  document.getElementById("pipelineTitle").textContent = "Running deliberation…";
+  allHistory=[];
+  document.getElementById("pipelineCard").style.display="block";
+  document.getElementById("resultsSection").style.display="none";
+  document.getElementById("statusLog").innerHTML="";
+  document.getElementById("cycleTabs").innerHTML="";
+  document.getElementById("cycleContent").innerHTML="";
+  document.getElementById("finalSection").innerHTML="";
+  document.getElementById("pipelineTitle").textContent="Running deliberation…";
+  document.getElementById("cycleIndicator").textContent="";
   ["solver","critic","validator"].forEach(r=>setStep(r,"waiting"));
+  updateModelLabels();
 
-  const btn = document.getElementById("runBtn");
-  btn.disabled = true;
-  btn.innerHTML = `<span class="spinner"></span>Running…`;
+  const btn=document.getElementById("runBtn");
+  btn.disabled=true;
+  btn.innerHTML=`<span class="spin"></span>Running…`;
 
   try{
-    for(let cycle=1; cycle<=cycles; cycle++){
-      log(`── Cycle ${cycle}/${cycles} ──`, "info");
+    for(let cycle=1;cycle<=cycles;cycle++){
+      document.getElementById("cycleIndicator").textContent=`Cycle ${cycle} / ${cycles}`;
+      log(`── Cycle ${cycle}/${cycles} ──`,"info");
 
-      // SOLVER
       setStep("solver","thinking");
       log("Solver thinking…");
-      const solverPrompt = buildSolverPrompt(problem, cycle, allHistory);
-      const solverRaw = await callGemini(solverPrompt);
-      const solver = parseJSON(solverRaw, 'solver');
-      solver.cycle = cycle;
+      const solverRaw=await callModel(buildSolverPrompt(problem,cycle,allHistory),"solver");
+      const solver=parseJSON(solverRaw,"solver"); solver.cycle=cycle;
       setStep("solver","done");
-      log(`Solver confidence: ${solver.confidence}/10`, "ok");
+      log(`Solver ✓  confidence ${solver.confidence}/10`,"ok");
 
-      // CRITIC
       setStep("critic","thinking");
       log("Critic reviewing…");
-      const criticPrompt = buildCriticPrompt(problem, cycle, solver);
-      const criticRaw = await callGemini(criticPrompt);
-      const critic = parseJSON(criticRaw, 'critic');
-      critic.cycle = cycle;
+      const criticRaw=await callModel(buildCriticPrompt(problem,cycle,solver),"critic");
+      const critic=parseJSON(criticRaw,"critic"); critic.cycle=cycle;
       setStep("critic","done");
-      log(`Critic found ${(critic.weaknesses||[]).length} weaknesses`, "warn");
+      log(`Critic ✓  ${(critic.weaknesses||[]).length} weaknesses found`,"warn");
 
-      // VALIDATOR
       setStep("validator","thinking");
       log("Validator deciding…");
-      const validatorPrompt = buildValidatorPrompt(problem, cycle, solver, critic);
-      const validatorRaw = await callGemini(validatorPrompt);
-      const validator = parseJSON(validatorRaw, 'validator');
-      validator.cycle = cycle;
+      const validatorRaw=await callModel(buildValidatorPrompt(problem,cycle,solver,critic),"validator");
+      const validator=parseJSON(validatorRaw,"validator"); validator.cycle=cycle;
       setStep("validator","done");
-      log(`Verdict: ${(validator.verdict||"?").toUpperCase()}  Score: ${validator.score}/10`,
-        validator.verdict==="approved"?"ok":validator.verdict==="rejected"?"err":"warn");
+      const vmap={approved:"ok",rejected:"err",needs_revision:"warn"};
+      log(`Validator ✓  ${(validator.verdict||"?").toUpperCase()}  ${validator.score}/10`,vmap[validator.verdict]||"info");
 
-      allHistory.push({cycle, solver, critic, validator});
+      allHistory.push({cycle,solver,critic,validator});
+      renderResults();
 
-      if(validator.verdict === "approved"){
-        log(`Approved on cycle ${cycle}. Stopping early.`, "ok");
-        break;
-      }
-      if(cycle < cycles){
-        ["solver","critic","validator"].forEach(r=>setStep(r,"waiting"));
-      }
+      if(validator.verdict==="approved"){log(`✅ Approved on cycle ${cycle}. Done.`,"ok");break;}
+      if(cycle<cycles) ["solver","critic","validator"].forEach(r=>setStep(r,"waiting"));
     }
-
-    renderResults();
-    document.getElementById("pipelineTitle").textContent = "Deliberation complete ✓";
-
-  } catch(err){
-    log("Error: " + err.message, "err");
+    document.getElementById("pipelineTitle").textContent="Deliberation complete ✓";
+    document.getElementById("cycleIndicator").textContent="";
+  }catch(err){
+    log("Error: "+err.message,"err");
     ["solver","critic","validator"].forEach(r=>{
-      const s = document.getElementById("step-"+r);
-      if(s.classList.contains("active")) setStep(r,"error");
+      if(document.getElementById("step-"+r).classList.contains("active")) setStep(r,"error");
     });
-    document.getElementById("pipelineTitle").textContent = "Error — see log";
-  } finally{
-    btn.disabled = false;
-    btn.innerHTML = "Run Deliberation";
+    document.getElementById("pipelineTitle").textContent="Error — see log";
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML="▶ Run Deliberation";
   }
 }
 
+// ── RENDER ───────────────────────────────────────────────────────────────────
 function renderResults(){
   if(!allHistory.length) return;
-  const section = document.getElementById("resultsSection");
-  const tabs    = document.getElementById("cycleTabs");
-  const content = document.getElementById("cycleContent");
-  section.style.display = "block";
-  tabs.innerHTML = "";
-  content.innerHTML = "";
+  const section=document.getElementById("resultsSection");
+  section.style.display="block";
 
-  const lastValidator = allHistory[allHistory.length-1].validator;
-  const verdict = lastValidator.verdict || "needs_revision";
-  const badge   = document.getElementById("verdictBadge");
-  badge.innerHTML = `<span class="verdict-badge verdict-${verdict}">${verdict.replace("_"," ")}</span>
-    <span class="score-badge" style="margin-left:6px">${lastValidator.score}/10</span>`;
+  // Top badges
+  const last=allHistory[allHistory.length-1];
+  const v=last.validator;
+  document.getElementById("topBadges").innerHTML=
+    `<span class="verdict ${v.verdict||'needs_revision'}">${(v.verdict||"?").replace("_"," ")}</span>
+     <span class="score-pill">${v.score}/10</span>`;
 
-  allHistory.forEach((h,i)=>{
-    const tab = document.createElement("button");
-    tab.className = "cycle-tab" + (i===allHistory.length-1?" active":"");
-    tab.textContent = `Cycle ${h.cycle}`;
-    tab.onclick = ()=>{
-      document.querySelectorAll(".cycle-tab").forEach(t=>t.classList.remove("active"));
-      tab.classList.add("active");
+  // Tabs — rebuild
+  const tabs=document.getElementById("cycleTabs");
+  const activeTab=tabs.querySelector(".ctab.on");
+  const activeCycle=activeTab?parseInt(activeTab.dataset.c):allHistory[allHistory.length-1].cycle;
+  tabs.innerHTML="";
+  allHistory.forEach(h=>{
+    const tab=document.createElement("button");
+    tab.className="ctab"+(h.cycle===activeCycle?" on":"");
+    tab.dataset.c=h.cycle;
+    const verd=h.validator.verdict||"needs_revision";
+    const icon=verd==="approved"?"✅":verd==="rejected"?"❌":"🔄";
+    tab.innerHTML=`${icon} Cycle ${h.cycle} <span style="opacity:.6;font-weight:400;margin-left:3px;">${h.validator.score}/10</span>`;
+    tab.onclick=()=>{
+      tabs.querySelectorAll(".ctab").forEach(t=>t.classList.remove("on"));
+      tab.classList.add("on");
       renderCycle(h);
     };
     tabs.appendChild(tab);
   });
 
-  renderCycle(allHistory[allHistory.length-1]);
-  section.scrollIntoView({behavior:"smooth",block:"start"});
+  // Show last (or currently active) cycle
+  const toShow=allHistory.find(h=>h.cycle===activeCycle)||allHistory[allHistory.length-1];
+  renderCycle(toShow);
+
+  // Final answer (always from last cycle)
+  const fs=document.getElementById("finalSection");
+  if(v.final_answer){
+    fs.innerHTML=`<div class="final">
+      <div class="final-label">✨ Final Answer</div>
+      <div class="final-body">${md(v.final_answer)}</div>
+    </div>`;
+  }
+
+  section.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
 function renderCycle(h){
-  const content = document.getElementById("cycleContent");
-  content.innerHTML = "";
+  const s=h.solver, c=h.critic, v=h.validator;
+  document.getElementById("cycleContent").innerHTML=`
+  <div class="agents-row">
 
-  // Solver card
-  const s = h.solver;
-  content.innerHTML += `
-  <div class="agent-card solver">
-    <div class="agent-card-header">
-      <div class="agent-name solver">🧠 Solver</div>
-      <div class="score-badge">Confidence ${s.confidence}/10</div>
-    </div>
-    <div class="agent-field"><div class="field-label">Solution</div><div class="field-value">${esc(s.solution)}</div></div>
-    <div class="agent-field"><div class="field-label">Reasoning</div><div class="field-value">${esc(s.reasoning)}</div></div>
-    ${s.changes_from_previous && s.changes_from_previous !== "N/A" ? `<div class="agent-field"><div class="field-label">Changes from previous cycle</div><div class="field-value">${esc(s.changes_from_previous)}</div></div>` : ""}
-    <div class="confidence-bar"><div class="confidence-fill" style="width:${(s.confidence||0)*10}%"></div></div>
-  </div>`;
-
-  // Critic card
-  const c = h.critic;
-  content.innerHTML += `
-  <div class="agent-card critic">
-    <div class="agent-card-header"><div class="agent-name critic">🔍 Critic</div></div>
-    <div class="agent-field"><div class="field-label">Overall Critique</div><div class="field-value">${esc(c.overall_critique)}</div></div>
-    ${listField("Strengths", c.strengths)}
-    ${listField("Weaknesses", c.weaknesses)}
-    ${listField("Missing Cases", c.missing_cases)}
-    ${listField("Suggestions", c.improvement_suggestions)}
-  </div>`;
-
-  // Validator card
-  const v = h.validator;
-  content.innerHTML += `
-  <div class="agent-card validator">
-    <div class="agent-card-header">
-      <div class="agent-name validator">✅ Validator</div>
-      <div>
-        <span class="verdict-badge verdict-${v.verdict}">${(v.verdict||"?").replace("_"," ")}</span>
-        <span class="score-badge" style="margin-left:4px">${v.score}/10</span>
+    <!-- SOLVER -->
+    <div class="acard solver">
+      <div class="acard-head">
+        <div class="acard-name solver">🧠 Solver</div>
+        ${confRing(s.confidence||0,"var(--solver)")}
       </div>
+      ${field("Solution", md(s.solution), true)}
+      ${field("Reasoning", md(s.reasoning))}
+      ${s.changes_from_previous&&s.changes_from_previous!=="N/A"?field("Changes",md(s.changes_from_previous)):""}
     </div>
-    <div class="agent-field"><div class="field-label">Rationale</div><div class="field-value">${esc(v.rationale)}</div></div>
-    ${listField("Criteria Met ✓", v.criteria_met)}
-    ${listField("Criteria Failed ✗", v.criteria_failed)}
-  </div>`;
 
-  // Final answer (last cycle only)
-  if(v.final_answer){
-    content.innerHTML += `
-    <div class="final-answer">
-      <div class="final-label">Final Answer</div>
-      <div class="final-text">${esc(v.final_answer)}</div>
-    </div>`;
-  }
+    <!-- CRITIC -->
+    <div class="acard critic">
+      <div class="acard-head">
+        <div class="acard-name critic">🔍 Critic</div>
+      </div>
+      ${field("Summary", md(c.overall_critique))}
+      ${chips("Strengths", c.strengths, "good")}
+      ${chips("Weaknesses", c.weaknesses, "bad")}
+      ${chips("Missing Cases", c.missing_cases, "neutral")}
+      ${chips("Suggestions", c.improvement_suggestions, "suggest")}
+    </div>
+
+    <!-- VALIDATOR -->
+    <div class="acard validator">
+      <div class="acard-head">
+        <div class="acard-name validator">✅ Validator</div>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <span class="verdict ${v.verdict||'needs_revision'}">${(v.verdict||"?").replace("_"," ")}</span>
+          <span class="score-pill">${v.score}/10</span>
+        </div>
+      </div>
+      ${field("Rationale", md(v.rationale))}
+      ${chips("Criteria Met", v.criteria_met, "good")}
+      ${chips("Criteria Failed", v.criteria_failed, "bad")}
+    </div>
+
+  </div>`;
 }
 
-function listField(label, items){
-  if(!items || !items.length) return "";
-  return `<div class="agent-field"><div class="field-label">${label}</div>
-    <ul class="field-list">${items.map(i=>`<li>${esc(i)}</li>`).join("")}</ul></div>`;
+function confRing(val, color){
+  const pct=((val||0)/10)*100;
+  const r=15, circ=2*Math.PI*r;
+  const dash=circ*pct/100;
+  return `<div class="conf-ring">
+    <svg width="38" height="38" viewBox="0 0 38 38">
+      <circle cx="19" cy="19" r="${r}" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="3"/>
+      <circle cx="19" cy="19" r="${r}" fill="none" stroke="${color}" stroke-width="3"
+        stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-linecap="round"/>
+    </svg>
+    <div class="conf-num">${val}</div>
+  </div>`;
+}
+
+function field(label, val, pre=false){
+  if(!val) return "";
+  return `<div class="afield">
+    <div class="aflabel">${label}</div>
+    <div class="afval${pre?" pre":""}">${val}</div>
+  </div>`;
+}
+
+function chips(label, arr, cls){
+  if(!arr||!arr.length) return "";
+  return `<div class="afield">
+    <div class="aflabel">${label}</div>
+    <div class="chips">${arr.map(i=>`<span class="chip ${cls}">${esc(i)}</span>`).join("")}</div>
+  </div>`;
+}
+
+// Mini markdown: bold, italic, newlines → <br>
+function md(s){
+  if(!s) return "";
+  return esc(s)
+    .replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g,"<em>$1</em>")
+    .replace(/`([^`]+)`/g,"<code style='background:rgba(255,255,255,.07);padding:1px 5px;border-radius:4px;font-size:.85em'>$1</code>")
+    .replace(/\n\n/g,"</p><p style='margin-top:8px'>")
+    .replace(/\n/g,"<br>");
 }
 
 function esc(s){
-  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
+  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
 function clearAll(){
-  document.getElementById("problemInput").value = "";
-  document.getElementById("pipelineCard").style.display = "none";
-  document.getElementById("resultsSection").style.display = "none";
-  allHistory = [];
+  document.getElementById("problemInput").value="";
+  document.getElementById("pipelineCard").style.display="none";
+  document.getElementById("resultsSection").style.display="none";
+  allHistory=[];
 }
 </script>
 </body>

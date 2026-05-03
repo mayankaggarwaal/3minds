@@ -368,7 +368,7 @@ function setStep(role, status){
   step.className = "pipeline-step" + (status === "thinking" ? " active" : status === "done" ? ` done-${role}` : "");
 }
 
-async function callGemini(prompt){
+async function callGemini(prompt, retryCount = 0){
   const key   = document.getElementById("apiKey").value.trim();
   const model = document.getElementById("modelSelect").value;
   if(!key) throw new Error("API key is missing — add it in Settings");
@@ -383,6 +383,23 @@ async function callGemini(prompt){
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   });
+
+  if(resp.status === 429 && retryCount < 4){
+    const errData = await resp.json().catch(()=>({}));
+    const msg = errData?.error?.message || "";
+    // Parse "retry in Xs" from the error message
+    const retryMatch = msg.match(/retry in ([\d.]+)s/i);
+    const waitSec = retryMatch ? Math.ceil(parseFloat(retryMatch[1])) + 2 : Math.min(60, 10 * Math.pow(2, retryCount));
+    log(`⏳ Rate limited — retrying in ${waitSec}s (attempt ${retryCount+1}/4)…`, "warn");
+    // Show countdown
+    for(let s = waitSec; s > 0; s--){
+      await new Promise(r => setTimeout(r, 1000));
+      if(s % 5 === 0 || s <= 5) log(`   ⏱ ${s}s remaining…`, "info");
+    }
+    log(`↩️ Retrying now…`, "info");
+    return callGemini(prompt, retryCount + 1);
+  }
+
   if(!resp.ok){
     const err = await resp.json().catch(()=>({}));
     throw new Error(`Gemini ${resp.status}: ${err?.error?.message || resp.statusText}`);

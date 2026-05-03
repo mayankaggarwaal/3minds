@@ -222,7 +222,7 @@ footer a{color:var(--accent);text-decoration:none;}
       <div>
         <div class="input-group">
           <label>Gemini API Key</label>
-          <input type="password" id="apiKey" placeholder="AIza..." value="AIzaSyCQWjF9iTutIZdIXJ-_72Q6N4yufWEJmvU"/>
+          <input type="password" id="apiKey" placeholder="Paste your Gemini API key here…"/>
         </div>
         <span class="key-toggle" onclick="toggleKey()">👁 show / hide</span>
       </div>
@@ -230,9 +230,9 @@ footer a{color:var(--accent);text-decoration:none;}
         <div class="input-group">
           <label>Model</label>
           <select id="modelSelect">
-            <option value="gemini-2.5-flash-preview-05-20" selected>gemini-2.5-flash (free · fast)</option>
+            <option value="gemini-2.5-flash" selected>gemini-2.5-flash (free · fast)</option>
             <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite (free · lightest)</option>
-            <option value="gemini-2.5-pro-preview-05-06">gemini-2.5-pro (free · 5 RPM)</option>
+            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro (free · 5 RPM)</option>
           </select>
         </div>
       </div>
@@ -347,6 +347,15 @@ function toggleKey(){
   const k = document.getElementById("apiKey");
   k.type = k.type === "password" ? "text" : "password";
 }
+
+// Persist API key in localStorage
+(function(){
+  const stored = localStorage.getItem("gemini_api_key");
+  if(stored) document.getElementById("apiKey").value = stored;
+  document.getElementById("apiKey").addEventListener("change", function(){
+    localStorage.setItem("gemini_api_key", this.value);
+  });
+})();
 
 function log(msg, type="info"){
   const el = document.getElementById("statusLog");

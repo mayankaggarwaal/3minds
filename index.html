@@ -385,7 +385,7 @@ async function callGemini(prompt, retryCount = 0){
   const url = `${GEMINI_BASE}/${model}:generateContent?key=${key}`;
   const body = {
     contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.7, maxOutputTokens: 4096 }
+    generationConfig: { temperature: 0.7, maxOutputTokens: 4096, responseMimeType: "application/json" }
   };
   const resp = await fetch(url, {
     method: "POST",
@@ -417,12 +417,34 @@ async function callGemini(prompt, retryCount = 0){
   return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 }
 
-function parseJSON(text){
-  const t = text.trim().replace(/^```json\s*/,"").replace(/^```\s*/,"").replace(/\s*```$/,"");
+function parseJSON(text, role){
+  // Strip markdown fences
+  let t = text.trim()
+    .replace(/^```json\s*/i,"").replace(/^```\s*/,"").replace(/\s*```$/,"").trim();
+  // Direct parse
   try{ return JSON.parse(t); }catch(e){}
-  const m = t.match(/\{[\s\S]*\}/);
-  if(m) try{ return JSON.parse(m[0]); }catch(e){}
-  throw new Error("Could not parse JSON from response");
+  // Find outermost { }
+  const start = t.indexOf("{");
+  const end   = t.lastIndexOf("}");
+  if(start !== -1 && end > start){
+    try{ return JSON.parse(t.slice(start, end+1)); }catch(e){}
+  }
+  // Greedy scan — find largest valid JSON object
+  for(let i = start; i <= end && i !== -1; i++){
+    if(t[i] !== "{") continue;
+    for(let j = end; j > i; j--){
+      if(t[j] !== "}") continue;
+      try{ return JSON.parse(t.slice(i,j+1)); }catch(e){}
+    }
+  }
+  // Last resort: wrap raw text as a minimal valid object
+  log(`⚠️ JSON parse failed for ${role||"agent"} — using raw text fallback`, "warn");
+  const fallbacks = {
+    solver:    {role:"solver",   cycle:0, solution:text, reasoning:"(raw)",  changes_from_previous:"N/A", confidence:5},
+    critic:    {role:"critic",   cycle:0, strengths:[], weaknesses:[text],   missing_cases:[], improvement_suggestions:[], overall_critique:text},
+    validator: {role:"validator",cycle:0, verdict:"needs_revision", score:5, criteria_met:[], criteria_failed:[], rationale:text, final_answer:text}
+  };
+  return fallbacks[role] || {role:"unknown", raw:text};
 }
 
 const SOLVER_SYS = `You are the Solver agent in a three-minds deliberation system.
@@ -494,7 +516,7 @@ async function startDeliberation(){
       log("Solver thinking…");
       const solverPrompt = buildSolverPrompt(problem, cycle, allHistory);
       const solverRaw = await callGemini(solverPrompt);
-      const solver = parseJSON(solverRaw);
+      const solver = parseJSON(solverRaw, 'solver');
       solver.cycle = cycle;
       setStep("solver","done");
       log(`Solver confidence: ${solver.confidence}/10`, "ok");
@@ -504,7 +526,7 @@ async function startDeliberation(){
       log("Critic reviewing…");
       const criticPrompt = buildCriticPrompt(problem, cycle, solver);
       const criticRaw = await callGemini(criticPrompt);
-      const critic = parseJSON(criticRaw);
+      const critic = parseJSON(criticRaw, 'critic');
       critic.cycle = cycle;
       setStep("critic","done");
       log(`Critic found ${(critic.weaknesses||[]).length} weaknesses`, "warn");
@@ -514,7 +536,7 @@ async function startDeliberation(){
       log("Validator deciding…");
       const validatorPrompt = buildValidatorPrompt(problem, cycle, solver, critic);
       const validatorRaw = await callGemini(validatorPrompt);
-      const validator = parseJSON(validatorRaw);
+      const validator = parseJSON(validatorRaw, 'validator');
       validator.cycle = cycle;
       setStep("validator","done");
       log(`Verdict: ${(validator.verdict||"?").toUpperCase()}  Score: ${validator.score}/10`,

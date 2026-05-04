@@ -275,7 +275,7 @@ footer a{color:var(--accent);text-decoration:none;}
     </div>
     <div class="input-group">
       <label>Describe the problem you want the three minds to deliberate on</label>
-      <textarea id="problemInput" placeholder="e.g. Design a system for matching freelancers to projects that minimizes mismatched expectations and maximizes both quality and speed of delivery.">Design a system for matching freelancers to projects that minimizes mismatched expectations and maximizes both quality and speed of delivery.</textarea>
+      <textarea id="problemInput" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&event.ctrlKey===false){event.preventDefault();}" placeholder="e.g. Design a system for matching freelancers to projects that minimizes mismatched expectations and maximizes both quality and speed of delivery.">Design a system for matching freelancers to projects that minimizes mismatched expectations and maximizes both quality and speed of delivery.</textarea>
     </div>
     <div class="controls-row">
       <button class="btn btn-primary" id="runBtn" onclick="startDeliberation()">
@@ -640,6 +640,12 @@ async function startDeliberation(){
       }
       if(cycle < cycles){
         ["solver","critic","validator"].forEach(r=>setStep(r,"waiting"));
+        log(`⏸ Pausing 60s before next cycle to avoid rate limits…`, "warn");
+        for(let s=60; s>0; s--){
+          await new Promise(r => setTimeout(r, 1000));
+          if(s % 10 === 0 || s <= 5) log(`   ⏱ Next cycle in ${s}s…`, "info");
+        }
+        log(`▶ Starting cycle ${cycle+1}…`, "info");
       }
     }
 

@@ -424,31 +424,98 @@ async function callOllama(prompt){
   return data.message?.content || "";
 }
 
+// ── SMART RATE LIMITER ──────────────────────────────────────────────────────
+// Tracks RPM client-side so we queue before hitting 429, not after.
+// Free tier: 15 RPM / 1 500 000 TPM / 1 500 RPD (resets midnight Pacific)
+const RateLimiter = {
+  RPM_CAP: 14,          // stay 1 below the 15 RPM limit as safety margin
+  _timestamps: [],      // rolling window of request start times (ms)
+
+  // Returns true if the error looks like a per-day (RPD) exhaustion
+  isRPD(msg){
+    return /per.?day|daily.?quota|quota.*day|resource.*exhausted/i.test(msg);
+  },
+
+  // Parse "retry after Xs" or "retry in Xs" from a Gemini error message
+  // Returns seconds (number) or null
+  parseRetryAfter(msg){
+    const m = msg.match(/retry[^0-9]*(after|in)\s*([\d.]+)\s*s/i)
+           || msg.match(/([\d.]+)\s*s/i);
+    return m ? Math.ceil(parseFloat(m[m.length-1])) : null;
+  },
+
+  // Wait until we have a free RPM slot, then record the request.
+  async acquire(){
+    while(true){
+      const now = Date.now();
+      const cutoff = now - 60_000;
+      this._timestamps = this._timestamps.filter(t => t > cutoff);
+
+      if(this._timestamps.length < this.RPM_CAP){
+        this._timestamps.push(now);
+        const used = this._timestamps.length;
+        log(`📊 RPM ${used}/${this.RPM_CAP} — request dispatched`, "info");
+        return;
+      }
+
+      // Oldest request will fall off the 60s window; wait until then + 1s
+      const oldest = this._timestamps[0];
+      const waitMs = oldest + 60_000 - Date.now() + 1_100;
+      const waitSec = Math.ceil(waitMs / 1000);
+      log(`🚦 RPM cap (${this._timestamps.length}/${this.RPM_CAP}) — waiting ${waitSec}s for a free slot…`, "warn");
+      for(let s = waitSec; s > 0; s--){
+        await new Promise(r => setTimeout(r, 1000));
+        if(s % 10 === 0 || s <= 5) log(`   ⏱ Slot available in ${s}s…`, "info");
+      }
+    }
+  }
+};
+
 async function callGemini(prompt, modelId, retryCount = 0){
-  const key   = document.getElementById("apiKey").value.trim();
+  const key = document.getElementById("apiKey").value.trim();
   if(!key) throw new Error("API key is missing — add it in Settings");
-  const url = `${GEMINI_BASE}/${modelId}:generateContent?key=${key}`;
+
+  // Proactively wait for an RPM slot before even sending the request
+  await RateLimiter.acquire();
+
+  const url  = `${GEMINI_BASE}/${modelId}:generateContent?key=${key}`;
   const body = {
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.7, maxOutputTokens: 4096, responseMimeType: "application/json" }
+    contents: [{ role:"user", parts:[{ text: prompt }] }],
+    generationConfig: { temperature:0.7, maxOutputTokens:4096, responseMimeType:"application/json" }
   };
   const resp = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
+    method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)
   });
-  if(resp.status === 429 && retryCount < 4){
+
+  if(resp.status === 429){
     const errData = await resp.json().catch(()=>({}));
     const msg = errData?.error?.message || "";
-    const waitSec = 70;
-    log(`⏳ Rate limited — retrying in 70s (attempt ${retryCount+1}/4)…`, "warn");
-    for(let s=waitSec; s>0; s--){
-      await new Promise(r => setTimeout(r, 1000));
-      if(s%5===0||s<=5) log(`   ⏱ ${s}s remaining…`, "info");
+
+    // RPD (daily quota) — no point retrying until midnight Pacific
+    if(RateLimiter.isRPD(msg)){
+      const pacific = new Date().toLocaleString("en-US", {timeZone:"America/Los_Angeles"});
+      throw new Error(
+        `Daily Gemini quota exhausted (resets at midnight Pacific — currently ${pacific}). ` +
+        `Switch to Ollama or wait until tomorrow.`
+      );
     }
-    log(`↩️ Retrying now…`, "info");
-    return callGemini(prompt, modelId, retryCount+1);
+
+    if(retryCount >= 4) throw new Error(`Gemini 429 — rate limited after 4 retries. ${msg}`);
+
+    // Parse exact wait from error; add +8s jitter buffer
+    const parsed = RateLimiter.parseRetryAfter(msg);
+    const base   = parsed ?? Math.min(120, 15 * Math.pow(2, retryCount)); // exp backoff fallback
+    const wait   = base + 8;
+
+    log(`⏳ Rate limited (429) — waiting ${wait}s as advised${parsed ? " by API" : " (backoff)"}… (attempt ${retryCount+1}/4)`, "warn");
+    for(let s = wait; s > 0; s--){
+      await new Promise(r => setTimeout(r, 1000));
+      if(s % 10 === 0 || s <= 5) log(`   ⏱ Retrying in ${s}s…`, "info");
+    }
+    log(`↩️ Retrying request (attempt ${retryCount+2}/4)…`, "info");
+    return callGemini(prompt, modelId, retryCount + 1);
   }
+
   if(!resp.ok){
     const err = await resp.json().catch(()=>({}));
     throw new Error(`Gemini ${resp.status}: ${err?.error?.message || resp.statusText}`);
@@ -464,45 +531,12 @@ async function callModel(prompt, role){
   if(prov === "ollama") return callOllama(prompt);
   if(prov === "auto"){
     try{ return await callGemini(prompt, roleModel); }
-    catch(e){ log(`Gemini failed — falling back to Ollama…`, "warn"); return callOllama(prompt); }
+    catch(e){
+      log(`Gemini failed (${e.message.slice(0,80)}) — falling back to Ollama…`, "warn");
+      return callOllama(prompt);
+    }
   }
   return callGemini(prompt, roleModel);
-}
-
-async function _callGeminiCompat(prompt, retryCount = 0){
-  // compat shim — unused but kept for shape
-  const key = ''; const url = '';
-  const body = {
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.7, maxOutputTokens: 4096, responseMimeType: "application/json" }
-  };
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-
-  if(resp.status === 429 && retryCount < 4){
-    const errData = await resp.json().catch(()=>({}));
-    const msg = errData?.error?.message || "";
-    // Parse "retry in Xs" from the error message
-    const waitSec = 70;
-    log(`⏳ Rate limited — retrying in 70s (attempt ${retryCount+1}/4)…`, "warn");
-    // Show countdown
-    for(let s = waitSec; s > 0; s--){
-      await new Promise(r => setTimeout(r, 1000));
-      if(s % 5 === 0 || s <= 5) log(`   ⏱ ${s}s remaining…`, "info");
-    }
-    log(`↩️ Retrying now…`, "info");
-    return callGemini(prompt, retryCount + 1);
-  }
-
-  if(!resp.ok){
-    const err = await resp.json().catch(()=>({}));
-    throw new Error(`Gemini ${resp.status}: ${err?.error?.message || resp.statusText}`);
-  }
-  const data = await resp.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 }
 
 function parseJSON(text, role){
@@ -638,11 +672,9 @@ async function startDeliberation(){
       }
       if(cycle < cycles){
         ["solver","critic","validator"].forEach(r=>setStep(r,"waiting"));
-        log(`⏸ Pausing 70s before next cycle to avoid rate limits…`, "warn");
-        for(let s=70; s>0; s--){
-          await new Promise(r => setTimeout(r, 1000));
-          if(s % 10 === 0 || s <= 5) log(`   ⏱ Next cycle in ${s}s…`, "info");
-        }
+        // Rate limiter handles API pacing; brief UI pause for readability
+        log(`⏸ Cycle ${cycle} done — starting cycle ${cycle+1} in 3s…`, "info");
+        await new Promise(r => setTimeout(r, 3000));
         log(`▶ Starting cycle ${cycle+1}…`, "info");
       }
     }

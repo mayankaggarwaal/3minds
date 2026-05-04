@@ -440,9 +440,8 @@ async function callGemini(prompt, modelId, retryCount = 0){
   if(resp.status === 429 && retryCount < 4){
     const errData = await resp.json().catch(()=>({}));
     const msg = errData?.error?.message || "";
-    const m = msg.match(/retry in ([\d.]+)s/i);
-    const waitSec = m ? Math.ceil(parseFloat(m[1]))+2 : Math.min(60, 10*Math.pow(2, retryCount));
-    log(`⏳ Rate limited — retrying in ${waitSec}s (attempt ${retryCount+1}/4)…`, "warn");
+    const waitSec = 70;
+    log(`⏳ Rate limited — retrying in 70s (attempt ${retryCount+1}/4)…`, "warn");
     for(let s=waitSec; s>0; s--){
       await new Promise(r => setTimeout(r, 1000));
       if(s%5===0||s<=5) log(`   ⏱ ${s}s remaining…`, "info");
@@ -487,9 +486,8 @@ async function _callGeminiCompat(prompt, retryCount = 0){
     const errData = await resp.json().catch(()=>({}));
     const msg = errData?.error?.message || "";
     // Parse "retry in Xs" from the error message
-    const retryMatch = msg.match(/retry in ([\d.]+)s/i);
-    const waitSec = retryMatch ? Math.ceil(parseFloat(retryMatch[1])) + 2 : Math.min(60, 10 * Math.pow(2, retryCount));
-    log(`⏳ Rate limited — retrying in ${waitSec}s (attempt ${retryCount+1}/4)…`, "warn");
+    const waitSec = 70;
+    log(`⏳ Rate limited — retrying in 70s (attempt ${retryCount+1}/4)…`, "warn");
     // Show countdown
     for(let s = waitSec; s > 0; s--){
       await new Promise(r => setTimeout(r, 1000));
@@ -640,8 +638,8 @@ async function startDeliberation(){
       }
       if(cycle < cycles){
         ["solver","critic","validator"].forEach(r=>setStep(r,"waiting"));
-        log(`⏸ Pausing 60s before next cycle to avoid rate limits…`, "warn");
-        for(let s=60; s>0; s--){
+        log(`⏸ Pausing 70s before next cycle to avoid rate limits…`, "warn");
+        for(let s=70; s>0; s--){
           await new Promise(r => setTimeout(r, 1000));
           if(s % 10 === 0 || s <= 5) log(`   ⏱ Next cycle in ${s}s…`, "info");
         }

@@ -212,55 +212,114 @@ footer a{color:var(--accent);text-decoration:none;}
       Settings
     </div>
     <div class="settings-row">
+      <!-- LEFT: API Keys -->
       <div>
         <div class="input-group">
-          <label>Gemini API Key</label>
-          <input type="password" id="apiKey" placeholder="Paste your Gemini API key here…"/>
+          <label>Gemini API Key <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-weight:400;font-size:.75rem;color:var(--accent);text-transform:none;margin-left:6px;">get key ↗</a></label>
+          <input type="password" id="apiKey" placeholder="AIza…"/>
         </div>
         <span class="key-toggle" onclick="toggleKey()">👁 show / hide</span>
+
+        <div class="input-group" style="margin-top:10px;">
+          <label>Anthropic (Claude) API Key <a href="https://console.anthropic.com/settings/keys" target="_blank" style="font-weight:400;font-size:.75rem;color:var(--accent);text-transform:none;margin-left:6px;">get key ↗</a></label>
+          <input type="password" id="anthropicKey" placeholder="sk-ant-…"/>
+        </div>
+
+        <div class="input-group" style="margin-top:8px;">
+          <label>OpenAI API Key <a href="https://platform.openai.com/api-keys" target="_blank" style="font-weight:400;font-size:.75rem;color:var(--accent);text-transform:none;margin-left:6px;">get key ↗</a></label>
+          <input type="password" id="openaiKey" placeholder="sk-…"/>
+        </div>
+
         <div style="margin-top:10px;">
-          <label>Ollama URL <span style="font-weight:400;text-transform:none;color:var(--muted)">(optional fallback)</span></label>
+          <label>Ollama URL <span style="font-weight:400;text-transform:none;color:var(--muted)">(local fallback)</span></label>
           <input type="text" id="ollamaUrl" placeholder="http://localhost:11434" value="http://localhost:11434"/>
         </div>
-        <div style="margin-top:8px;">
+        <div style="margin-top:6px;">
           <label>Ollama model</label>
           <input type="text" id="ollamaModel" placeholder="llama3.2" value="llama3.2"/>
         </div>
       </div>
+
+      <!-- RIGHT: Model selects per role -->
       <div>
         <div class="input-group">
-          <label>Provider</label>
+          <label>Default fallback</label>
           <select id="providerSelect">
-            <option value="gemini" selected>Gemini (primary)</option>
-            <option value="ollama">Ollama (primary)</option>
-            <option value="auto">Auto — Gemini → Ollama fallback</option>
+            <option value="gemini" selected>Gemini (default)</option>
+            <option value="ollama">Ollama (local)</option>
+            <option value="auto">Auto — Gemini → Ollama</option>
           </select>
         </div>
+
         <div class="input-group" style="margin-top:10px;">
           <label>🧠 Solver model</label>
           <select id="solverModel">
-            <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
-            <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
-            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
-            <option value="ollama">Ollama (local)</option>
+            <optgroup label="─ Gemini ─">
+              <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+              <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
+              <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+            </optgroup>
+            <optgroup label="─ Claude ─">
+              <option value="claude-opus-4-5">claude-opus-4 (best)</option>
+              <option value="claude-sonnet-4-5">claude-sonnet-4 (fast)</option>
+              <option value="claude-haiku-4-5">claude-haiku-4 (fastest)</option>
+            </optgroup>
+            <optgroup label="─ OpenAI ─">
+              <option value="gpt-4o">gpt-4o</option>
+              <option value="gpt-4o-mini">gpt-4o-mini</option>
+              <option value="o3-mini">o3-mini (reasoning)</option>
+            </optgroup>
+            <optgroup label="─ Local ─">
+              <option value="ollama">Ollama (local)</option>
+            </optgroup>
           </select>
         </div>
+
         <div class="input-group" style="margin-top:8px;">
           <label>🔍 Critic model</label>
           <select id="criticModel">
-            <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
-            <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
-            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
-            <option value="ollama">Ollama (local)</option>
+            <optgroup label="─ Gemini ─">
+              <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+              <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
+              <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+            </optgroup>
+            <optgroup label="─ Claude ─">
+              <option value="claude-opus-4-5">claude-opus-4 (best)</option>
+              <option value="claude-sonnet-4-5">claude-sonnet-4 (fast)</option>
+              <option value="claude-haiku-4-5">claude-haiku-4 (fastest)</option>
+            </optgroup>
+            <optgroup label="─ OpenAI ─">
+              <option value="gpt-4o">gpt-4o</option>
+              <option value="gpt-4o-mini">gpt-4o-mini</option>
+              <option value="o3-mini">o3-mini (reasoning)</option>
+            </optgroup>
+            <optgroup label="─ Local ─">
+              <option value="ollama">Ollama (local)</option>
+            </optgroup>
           </select>
         </div>
+
         <div class="input-group" style="margin-top:8px;">
           <label>✅ Validator model</label>
           <select id="validatorModel">
-            <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
-            <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
-            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
-            <option value="ollama">Ollama (local)</option>
+            <optgroup label="─ Gemini ─">
+              <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+              <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
+              <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+            </optgroup>
+            <optgroup label="─ Claude ─">
+              <option value="claude-opus-4-5">claude-opus-4 (best)</option>
+              <option value="claude-sonnet-4-5">claude-sonnet-4 (fast)</option>
+              <option value="claude-haiku-4-5">claude-haiku-4 (fastest)</option>
+            </optgroup>
+            <optgroup label="─ OpenAI ─">
+              <option value="gpt-4o">gpt-4o</option>
+              <option value="gpt-4o-mini">gpt-4o-mini</option>
+              <option value="o3-mini">o3-mini (reasoning)</option>
+            </optgroup>
+            <optgroup label="─ Local ─">
+              <option value="ollama">Ollama (local)</option>
+            </optgroup>
           </select>
         </div>
       </div>
@@ -379,8 +438,8 @@ function toggleKey(){
 // Persist settings in localStorage
 (function(){
   const fields = [
-    ["apiKey","gemini_api_key"], ["ollamaUrl","ollama_url"],
-    ["ollamaModel","ollama_model"], ["providerSelect","provider"],
+    ["apiKey","gemini_api_key"], ["anthropicKey","anthropic_api_key"], ["openaiKey","openai_api_key"],
+    ["ollamaUrl","ollama_url"], ["ollamaModel","ollama_model"], ["providerSelect","provider"],
     ["solverModel","solver_model"], ["criticModel","critic_model"], ["validatorModel","validator_model"]
   ];
   fields.forEach(([id, key]) => {
@@ -524,9 +583,76 @@ async function callGemini(prompt, modelId, retryCount = 0){
   return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 }
 
+// ── ANTHROPIC CLAUDE ─────────────────────────────────────────────────────────
+async function callClaude(prompt, modelId){
+  const key = document.getElementById("anthropicKey").value.trim();
+  if(!key) throw new Error("Anthropic API key missing — add it in Settings");
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key": key,
+      "anthropic-version":"2023-06-01"
+    },
+    body: JSON.stringify({
+      model: modelId,
+      max_tokens: 4096,
+      messages:[{ role:"user", content: prompt }]
+    })
+  });
+  if(!resp.ok){
+    const err = await resp.json().catch(()=>({}));
+    throw new Error(`Claude ${resp.status}: ${err?.error?.message || resp.statusText}`);
+  }
+  const data = await resp.json();
+  return data.content?.[0]?.text || "";
+}
+
+// ── OPENAI ───────────────────────────────────────────────────────────────────
+async function callOpenAI(prompt, modelId){
+  const key = document.getElementById("openaiKey").value.trim();
+  if(!key) throw new Error("OpenAI API key missing — add it in Settings");
+  // o-series models don't support response_format or temperature
+  const isOSeries = /^o\d/i.test(modelId);
+  const body = {
+    model: modelId,
+    messages:[{ role:"user", content: prompt }],
+    max_completion_tokens: 4096,
+    ...(isOSeries ? {} : { temperature:0.7, response_format:{ type:"json_object" } })
+  };
+  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${key}` },
+    body: JSON.stringify(body)
+  });
+  if(!resp.ok){
+    const err = await resp.json().catch(()=>({}));
+    throw new Error(`OpenAI ${resp.status}: ${err?.error?.message || resp.statusText}`);
+  }
+  const data = await resp.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+
+// ── DISPATCH — route by model ID prefix ──────────────────────────────────────
 async function callModel(prompt, role){
   const roleModel = (document.getElementById(role+"Model")||{}).value || "gemini-2.5-flash";
+
+  // Explicit local
   if(roleModel === "ollama") return callOllama(prompt);
+
+  // Claude (claude-*)
+  if(roleModel.startsWith("claude-")){
+    log(`🟣 Claude (${roleModel}) handling ${role}…`, "info");
+    return callClaude(prompt, roleModel);
+  }
+
+  // OpenAI (gpt-* or o1* or o3*)
+  if(roleModel.startsWith("gpt-") || /^o\d/.test(roleModel)){
+    log(`🟢 OpenAI (${roleModel}) handling ${role}…`, "info");
+    return callOpenAI(prompt, roleModel);
+  }
+
+  // Gemini (default)
   const prov = document.getElementById("providerSelect").value;
   if(prov === "ollama") return callOllama(prompt);
   if(prov === "auto"){

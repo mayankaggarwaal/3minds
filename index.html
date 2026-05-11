@@ -393,15 +393,24 @@ function toggleKey(){
 // Persist settings in localStorage
 (function(){
   const fields = [
-    ["apiKey","gemini_api_key"], ["anthropicKey","anthropic_api_key"], ["openaiKey","openai_api_key"],
+    ["apiKey","gemini_api_key"], ["openaiKey","openai_api_key"],
     ["ollamaUrl","ollama_url"], ["ollamaModel","ollama_model"], ["providerSelect","provider"],
     ["solverModel","solver_model"], ["criticModel","critic_model"], ["validatorModel","validator_model"]
   ];
+  const MODEL_DEFAULT = "gemini-2.5-flash";
+  const modelFields = new Set(["solverModel","criticModel","validatorModel"]);
   fields.forEach(([id, key]) => {
     const el = document.getElementById(id);
     if(!el) return;
     const stored = localStorage.getItem(key);
-    if(stored) el.value = stored;
+    if(stored){
+      el.value = stored;
+      // If stored value no longer exists as an option, fall back to Gemini default
+      if(modelFields.has(id) && el.value !== stored){
+        el.value = MODEL_DEFAULT;
+        localStorage.setItem(key, MODEL_DEFAULT);
+      }
+    }
     el.addEventListener("change", () => localStorage.setItem(key, el.value));
   });
 })();

@@ -220,11 +220,6 @@ footer a{color:var(--accent);text-decoration:none;}
         </div>
         <span class="key-toggle" onclick="toggleKey()">👁 show / hide</span>
 
-        <div class="input-group" style="margin-top:10px;">
-          <label>Anthropic (Claude) API Key <a href="https://console.anthropic.com/settings/keys" target="_blank" style="font-weight:400;font-size:.75rem;color:var(--accent);text-transform:none;margin-left:6px;">get key ↗</a></label>
-          <input type="password" id="anthropicKey" placeholder="sk-ant-…"/>
-        </div>
-
         <div class="input-group" style="margin-top:8px;">
           <label>OpenAI API Key <a href="https://platform.openai.com/api-keys" target="_blank" style="font-weight:400;font-size:.75rem;color:var(--accent);text-transform:none;margin-left:6px;">get key ↗</a></label>
           <input type="password" id="openaiKey" placeholder="sk-…"/>
@@ -241,85 +236,45 @@ footer a{color:var(--accent);text-decoration:none;}
       </div>
 
       <!-- RIGHT: Model selects per role -->
+      <!-- hidden providerSelect kept for JS compat -->
+      <select id="providerSelect" style="display:none"><option value="gemini" selected>Gemini</option></select>
       <div>
         <div class="input-group">
-          <label>Default fallback</label>
-          <select id="providerSelect">
-            <option value="gemini" selected>Gemini (default)</option>
-            <option value="ollama">Ollama (local)</option>
-            <option value="auto">Auto — Gemini → Ollama</option>
-          </select>
-        </div>
-
-        <div class="input-group" style="margin-top:10px;">
           <label>🧠 Solver model</label>
           <select id="solverModel">
-            <optgroup label="─ Gemini ─">
-              <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
-              <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
-              <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
-            </optgroup>
-            <optgroup label="─ Claude ─">
-              <option value="claude-opus-4-5">claude-opus-4 (best)</option>
-              <option value="claude-sonnet-4-5">claude-sonnet-4 (fast)</option>
-              <option value="claude-haiku-4-5">claude-haiku-4 (fastest)</option>
-            </optgroup>
-            <optgroup label="─ OpenAI ─">
-              <option value="gpt-4o">gpt-4o</option>
-              <option value="gpt-4o-mini">gpt-4o-mini</option>
-              <option value="o3-mini">o3-mini (reasoning)</option>
-            </optgroup>
-            <optgroup label="─ Local ─">
-              <option value="ollama">Ollama (local)</option>
-            </optgroup>
+            <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+            <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
+            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+            <option value="gpt-4o">gpt-4o (OpenAI)</option>
+            <option value="gpt-4o-mini">gpt-4o-mini (OpenAI)</option>
+            <option value="o3-mini">o3-mini (OpenAI)</option>
+            <option value="ollama">Ollama (local)</option>
           </select>
         </div>
 
         <div class="input-group" style="margin-top:8px;">
           <label>🔍 Critic model</label>
           <select id="criticModel">
-            <optgroup label="─ Gemini ─">
-              <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
-              <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
-              <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
-            </optgroup>
-            <optgroup label="─ Claude ─">
-              <option value="claude-opus-4-5">claude-opus-4 (best)</option>
-              <option value="claude-sonnet-4-5">claude-sonnet-4 (fast)</option>
-              <option value="claude-haiku-4-5">claude-haiku-4 (fastest)</option>
-            </optgroup>
-            <optgroup label="─ OpenAI ─">
-              <option value="gpt-4o">gpt-4o</option>
-              <option value="gpt-4o-mini">gpt-4o-mini</option>
-              <option value="o3-mini">o3-mini (reasoning)</option>
-            </optgroup>
-            <optgroup label="─ Local ─">
-              <option value="ollama">Ollama (local)</option>
-            </optgroup>
+            <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+            <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
+            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+            <option value="gpt-4o">gpt-4o (OpenAI)</option>
+            <option value="gpt-4o-mini">gpt-4o-mini (OpenAI)</option>
+            <option value="o3-mini">o3-mini (OpenAI)</option>
+            <option value="ollama">Ollama (local)</option>
           </select>
         </div>
 
         <div class="input-group" style="margin-top:8px;">
           <label>✅ Validator model</label>
           <select id="validatorModel">
-            <optgroup label="─ Gemini ─">
-              <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
-              <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
-              <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
-            </optgroup>
-            <optgroup label="─ Claude ─">
-              <option value="claude-opus-4-5">claude-opus-4 (best)</option>
-              <option value="claude-sonnet-4-5">claude-sonnet-4 (fast)</option>
-              <option value="claude-haiku-4-5">claude-haiku-4 (fastest)</option>
-            </optgroup>
-            <optgroup label="─ OpenAI ─">
-              <option value="gpt-4o">gpt-4o</option>
-              <option value="gpt-4o-mini">gpt-4o-mini</option>
-              <option value="o3-mini">o3-mini (reasoning)</option>
-            </optgroup>
-            <optgroup label="─ Local ─">
-              <option value="ollama">Ollama (local)</option>
-            </optgroup>
+            <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+            <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite</option>
+            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+            <option value="gpt-4o">gpt-4o (OpenAI)</option>
+            <option value="gpt-4o-mini">gpt-4o-mini (OpenAI)</option>
+            <option value="o3-mini">o3-mini (OpenAI)</option>
+            <option value="ollama">Ollama (local)</option>
           </select>
         </div>
       </div>

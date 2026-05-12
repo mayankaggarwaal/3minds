@@ -18,9 +18,9 @@ html,body,[data-testid="stApp"]{background:#0d1117!important;font-family:'Inter'
 [data-testid="stSidebar"]{background:#131d2e!important;border-right:1px solid #1e3050!important;}
 [data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea{background:#1a2640!important;border:1px solid #1e3050!important;color:#e8e8f0!important;border-radius:8px!important;}
 [data-testid="stButton"]>button{background:linear-gradient(135deg,#4f72f5,#82a8ff)!important;border:none!important;color:white!important;font-weight:700!important;border-radius:10px!important;width:100%;}
-.hero-wrap{text-align:center;padding:36px 20px 24px;}
-.hero-logo{font-size:clamp(2.8rem,8vw,5rem);font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#4f72f5,#82a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;line-height:1.1;margin-bottom:10px;}
-.hero-tag{font-size:clamp(1rem,3vw,1.4rem);color:#e8e8f0;margin-top:8px;letter-spacing:.02em;font-weight:700;}
+.hero-wrap{text-align:center;padding:60px 20px 40px;}
+.hero-logo{font-size:clamp(3.5rem,10vw,6.5rem);font-weight:900;letter-spacing:-.03em;color:#ffffff;display:inline-block;line-height:1.05;margin-bottom:8px;}
+.hero-tag{font-size:clamp(2rem,5vw,3.8rem);color:#e8e8f0;margin-top:4px;letter-spacing:-.02em;font-weight:900;line-height:1.1;}
 .hero-tag span{background:linear-gradient(135deg,#4f72f5,#82a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .pipe-row{display:flex;gap:10px;align-items:center;margin-bottom:18px;}
 .pipe-step{flex:1;background:#131d2e;border:1px solid #1e3050;border-radius:12px;padding:14px 10px;text-align:center;transition:all .3s;}
@@ -114,7 +114,7 @@ with st.sidebar:
 st.markdown("""
 <div class="hero-wrap">
   <div class="hero-logo">3minds</div>
-  <div class="hero-tag">Think. Question. <span>Validate.</span></div>
+  <div class="hero-tag">Think. Question.<br><span>Validate.</span></div>
 </div>
 """, unsafe_allow_html=True)
 

@@ -18,16 +18,6 @@ html,body,[data-testid="stApp"]{
 }
 #MainMenu,footer{visibility:hidden;}
 [data-testid="stToolbar"]{display:none;}
-[data-testid="collapsedControl"]{
-  background:linear-gradient(135deg,#4f72f5,#82a8ff)!important;
-  border-radius:50%!important;
-  width:40px!important;height:40px!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  box-shadow:0 0 16px rgba(79,114,245,.5)!important;
-  top:12px!important;left:12px!important;
-  color:white!important;
-}
-[data-testid="collapsedControl"] svg{color:white!important;fill:white!important;}
 [data-testid="stSidebar"]{background:#0d1528!important;border-right:1px solid #1a2a4a!important;}
 [data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea{background:#111827!important;border:1px solid #1a2a4a!important;color:#e8e8f0!important;border-radius:8px!important;}
 [data-testid="stButton"]>button{background:linear-gradient(135deg,#4f72f5,#82a8ff)!important;border:none!important;color:white!important;font-weight:700!important;border-radius:10px!important;width:100%;}
@@ -92,37 +82,30 @@ for k,v in [("log",[]),("history",[]),("running",False),("done",False),
         st.session_state[k] = v
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("<div style='padding:10px 0 16px'><span style='font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,#4f72f5,#82a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;'>3minds</span> <span style='color:#8899bb;font-size:.8rem;'>settings</span></div>", unsafe_allow_html=True)
+claude_avail = shutil.which("claude") is not None
+codex_avail  = shutil.which("codex")  is not None
 
-    st.markdown("**API Keys**")
-    gemini_key   = st.text_input("Gemini API Key",  type="password", placeholder="AIza…", help="aistudio.google.com — free tier available")
-    openai_key   = st.text_input("OpenAI API Key",  type="password", placeholder="sk-…")
-
-    st.markdown("**Local providers**")
-    ollama_url   = st.text_input("Ollama URL",   value="http://localhost:11434")
-    ollama_model = st.text_input("Ollama model", value="llama3.2")
-
-    # Show CLI availability
-    claude_avail = shutil.which("claude") is not None
-    codex_avail  = shutil.which("codex")  is not None
-    st.markdown(f"""
-    <div style='font-size:.78rem;color:#8899bb;background:#0b1220;border:1px solid #1a2a4a;border-radius:8px;padding:10px 12px;margin-top:4px;line-height:1.8;'>
-      <b style='color:#e8e8f0'>CLI status</b><br>
-      {"✅" if claude_avail else "❌"} Claude CLI {"(ready)" if claude_avail else "(not installed)"}<br>
-      {"✅" if codex_avail  else "❌"} Codex CLI  {"(ready)" if codex_avail  else "(not installed)"}<br>
-      <span style='color:#f59e0b'>⚡ CLI options only work locally</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("---")
-    st.markdown("<div style='font-size:.78rem;color:#8899bb;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px'>Model per role</div>", unsafe_allow_html=True)
-    sm = VALUES[LABELS.index(st.selectbox("🧠 Solver",    LABELS, index=0))]
-    cm = VALUES[LABELS.index(st.selectbox("🔍 Critic",    LABELS, index=0))]
-    vm = VALUES[LABELS.index(st.selectbox("✅ Validator", LABELS, index=0))]
-    cycles = st.select_slider("Cycles", [1,2,3], value=2)
-    st.markdown("---")
-    st.markdown("<div style='color:#8899bb;font-size:.73rem;line-height:1.7'><a href='https://github.com/mayankaggarwaal/3minds' style='color:#4f72f5;'>GitHub</a> · Run locally: <code style='color:#4f72f5'>streamlit run app.py</code></div>", unsafe_allow_html=True)
+with st.expander("⚙️  Settings", expanded=False):
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("<div style='font-size:.75rem;color:#8899bb;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px'>API Keys</div>", unsafe_allow_html=True)
+        gemini_key   = st.text_input("Gemini API Key",  type="password", placeholder="AIza…", help="aistudio.google.com — free tier")
+        openai_key   = st.text_input("OpenAI API Key",  type="password", placeholder="sk-…")
+        st.markdown("<div style='font-size:.75rem;color:#8899bb;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin:10px 0 6px'>Local Providers</div>", unsafe_allow_html=True)
+        ollama_url   = st.text_input("Ollama URL",   value="http://localhost:11434")
+        ollama_model = st.text_input("Ollama model", value="llama3.2")
+        st.markdown(f"""<div style='font-size:.75rem;color:#8899bb;background:#0b1220;border:1px solid #1a2a4a;border-radius:8px;padding:8px 12px;margin-top:8px;line-height:1.9;'>
+          {"✅" if claude_avail else "❌"} Claude CLI &nbsp;{"ready" if claude_avail else "not installed"}<br>
+          {"✅" if codex_avail  else "❌"} Codex CLI &nbsp;{"ready" if codex_avail  else "not installed"}<br>
+          <span style='color:#f59e0b;'>⚡ CLI options only work locally</span>
+        </div>""", unsafe_allow_html=True)
+    with col2:
+        st.markdown("<div style='font-size:.75rem;color:#8899bb;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px'>Model per role</div>", unsafe_allow_html=True)
+        sm = VALUES[LABELS.index(st.selectbox("🧠 Solver",    LABELS, index=0))]
+        cm = VALUES[LABELS.index(st.selectbox("🔍 Critic",    LABELS, index=0))]
+        vm = VALUES[LABELS.index(st.selectbox("✅ Validator", LABELS, index=0))]
+        cycles = st.select_slider("Cycles", [1,2,3], value=2)
+        st.markdown("<div style='color:#8899bb;font-size:.73rem;margin-top:8px;'><a href='https://github.com/mayankaggarwaal/3minds' style='color:#4f72f5;'>GitHub</a> · <code style='color:#4f72f5;'>streamlit run app.py</code></div>", unsafe_allow_html=True)
 
 # ── Hero ──────────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -133,14 +116,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Input ─────────────────────────────────────────────────────────────────────
-st.markdown("""
-<div style='text-align:center;margin:-8px 0 20px;'>
-  <span style='color:#8899bb;font-size:.82rem;'>
-    ⚙️ Click the <b style='color:#4f72f5;font-size:1rem;'>glowing button</b> on the top-left to open Settings
-  </span>
-</div>
-""", unsafe_allow_html=True)
-
 problem = st.text_area(
     "What do you want the three minds to deliberate on?",
     value="I built 3minds — 3 AI agents that challenge each other to find the best answer. I genuinely want to know: how much of a difference does this actually make for real people?",

@@ -56,6 +56,50 @@ html,body,[data-testid="stApp"]{
 .verdict-needs_revision{color:#f59e0b;font-weight:700;}
 .verdict-rejected{color:#ef4444;font-weight:700;}
 .local-badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:.65rem;font-weight:700;background:rgba(245,158,11,.15);color:#f59e0b;margin-left:4px;vertical-align:middle;}
+
+/* ── Mobile responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hero-logo { font-size: 2.8rem !important; }
+  .hero-tag  { font-size: 1.6rem !important; }
+  .hero-validate { font-size: 1.6rem !important; }
+  .hero-wrap { padding: 32px 12px 20px !important; }
+
+  /* Stack expander columns */
+  [data-testid="column"] {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+    min-width: 100% !important;
+  }
+
+  /* Full width inputs */
+  [data-testid="stTextInput"],
+  [data-testid="stTextArea"],
+  [data-testid="stSelectbox"] {
+    width: 100% !important;
+  }
+  [data-testid="stTextInput"] input,
+  [data-testid="stTextArea"] textarea {
+    width: 100% !important;
+    font-size: 16px !important; /* prevent iOS zoom on focus */
+    box-sizing: border-box !important;
+  }
+
+  /* Pipeline steps wrap on mobile */
+  .pipe-row {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .pipe-step { min-width: 80px !important; }
+  .pipe-arrow { display: none !important; }
+
+  /* Agent cards */
+  .agent-card, .final-card { padding: 14px !important; }
+
+  /* Main container padding */
+  .main .block-container {
+    padding: 1rem !important;
+  }
+}
 </style>
 """, unsafe_allow_html=True)
 

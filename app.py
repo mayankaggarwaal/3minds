@@ -19,9 +19,9 @@ html,body,[data-testid="stApp"]{background:#0a0a0f!important;font-family:'Inter'
 [data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea{background:#1a1a27!important;border:1px solid #2a2a3d!important;color:#e8e8f0!important;border-radius:8px!important;}
 [data-testid="stButton"]>button{background:linear-gradient(135deg,#6366f1,#8b5cf6)!important;border:none!important;color:white!important;font-weight:700!important;border-radius:10px!important;width:100%;}
 .hero-wrap{text-align:center;padding:36px 20px 24px;}
-.hero-logo{font-size:3rem;font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;line-height:1.1;}
-.hero-tag{font-size:.9rem;color:#8888aa;margin-top:6px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;}
-.hero-tag span{color:#6366f1;}
+.hero-logo{font-size:clamp(2.8rem,8vw,5rem);font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;line-height:1.1;margin-bottom:10px;}
+.hero-tag{font-size:clamp(1rem,3vw,1.4rem);color:#e8e8f0;margin-top:8px;letter-spacing:.02em;font-weight:700;}
+.hero-tag span{background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .pipe-row{display:flex;gap:10px;align-items:center;margin-bottom:18px;}
 .pipe-step{flex:1;background:#12121a;border:1px solid #2a2a3d;border-radius:12px;padding:14px 10px;text-align:center;transition:all .3s;}
 .pipe-step.thinking{border-color:#6366f1;box-shadow:0 0 18px rgba(99,102,241,.35);}

@@ -18,6 +18,16 @@ html,body,[data-testid="stApp"]{
 }
 #MainMenu,footer{visibility:hidden;}
 [data-testid="stToolbar"]{display:none;}
+[data-testid="collapsedControl"]{
+  background:linear-gradient(135deg,#4f72f5,#82a8ff)!important;
+  border-radius:50%!important;
+  width:40px!important;height:40px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  box-shadow:0 0 16px rgba(79,114,245,.5)!important;
+  top:12px!important;left:12px!important;
+  color:white!important;
+}
+[data-testid="collapsedControl"] svg{color:white!important;fill:white!important;}
 [data-testid="stSidebar"]{background:#0d1528!important;border-right:1px solid #1a2a4a!important;}
 [data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea{background:#111827!important;border:1px solid #1a2a4a!important;color:#e8e8f0!important;border-radius:8px!important;}
 [data-testid="stButton"]>button{background:linear-gradient(135deg,#4f72f5,#82a8ff)!important;border:none!important;color:white!important;font-weight:700!important;border-radius:10px!important;width:100%;}
@@ -126,7 +136,7 @@ st.markdown("""
 st.markdown("""
 <div style='text-align:center;margin:-8px 0 20px;'>
   <span style='color:#8899bb;font-size:.82rem;'>
-    ⚙️ Click the <b style='color:#4f72f5'>›</b> arrow on the top-left to open Settings — add your API key and pick models
+    ⚙️ Click the <b style='color:#4f72f5;font-size:1rem;'>glowing button</b> on the top-left to open Settings
   </span>
 </div>
 """, unsafe_allow_html=True)

@@ -438,6 +438,15 @@ async function countdown(secs){
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 // ── API calls ─────────────────────────────────────────────────────────────────
+// Fix UTF-8 mojibake (â€" → —, â€™ → ' etc.)
+function fixEncoding(str){
+  try{
+    const bytes=new Uint8Array(str.length);
+    for(let i=0;i<str.length;i++) bytes[i]=str.charCodeAt(i)&0xff;
+    return new TextDecoder('utf-8').decode(bytes);
+  }catch(e){ return str; }
+}
+
 async function callGemini(prompt, modelId, retry=0){
   const key = document.getElementById("geminiKey").value.trim();
   if(!key) throw new Error("Gemini API key missing — open Settings");
@@ -460,7 +469,7 @@ async function callGemini(prompt, modelId, retry=0){
   }
   if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(`Gemini ${resp.status}: ${e?.error?.message||resp.statusText}`);}
   const d=await resp.json();
-  return d.candidates?.[0]?.content?.parts?.[0]?.text||"";
+  return fixEncoding(d.candidates?.[0]?.content?.parts?.[0]?.text||"");
 }
 
 async function callOpenAI(prompt, modelId){
@@ -472,7 +481,7 @@ async function callOpenAI(prompt, modelId){
   const resp=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",
     headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body:JSON.stringify(body)});
   if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(`OpenAI ${resp.status}: ${e?.error?.message||resp.statusText}`);}
-  return (await resp.json()).choices?.[0]?.message?.content||"";
+  return fixEncoding((await resp.json()).choices?.[0]?.message?.content||"");
 }
 
 async function callOllama(prompt){
@@ -481,7 +490,7 @@ async function callOllama(prompt){
   const resp=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({model,messages:[{role:"user",content:prompt}],stream:false,format:"json"})});
   if(!resp.ok) throw new Error(`Ollama ${resp.status}: ${resp.statusText}`);
-  return (await resp.json()).message?.content||"";
+  return fixEncoding((await resp.json()).message?.content||"");
 }
 
 function callModel(prompt, modelId){

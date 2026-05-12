@@ -250,7 +250,7 @@ def call_claude_cli(prompt):
         [exe, "-p", "--output-format", "stream-json", "--verbose", "--dangerously-skip-permissions"],
         input=prompt, capture_output=True, text=True, timeout=180
     )
-    text = _parse_cli_output(result.stdout, "claude")
+    text = fix_encoding(_parse_cli_output(result.stdout, "claude"))
     if not text:
         raise RuntimeError(f"Claude CLI returned no output. stderr: {result.stderr[:200]}")
     return text
@@ -265,7 +265,7 @@ def call_codex_cli(prompt):
          "--dangerously-bypass-approvals-and-sandbox", "-c", "mcp_servers={}", "-"],
         input=prompt, capture_output=True, text=True, timeout=180
     )
-    text = _parse_cli_output(result.stdout, "codex")
+    text = fix_encoding(_parse_cli_output(result.stdout, "codex"))
     if not text:
         raise RuntimeError(f"Codex CLI returned no output. stderr: {result.stderr[:200]}")
     return text
@@ -311,15 +311,23 @@ def call_ollama(prompt):
                 json={"model":ollama_model,"messages":[{"role":"user","content":prompt}],"stream":False,"format":"json"},
                 timeout=120)
     r.raise_for_status()
-    return r.json()["message"]["content"]
+    return fix_encoding(r.json()["message"]["content"])
 
 def call_model(prompt, model_id):
     if model_id == "ollama":     return call_ollama(prompt)
     if model_id == "claude-cli": return call_claude_cli(prompt)
     if model_id == "codex-cli":  return call_codex_cli(prompt)
     if model_id.startswith("gpt-") or re.match(r"^o\d", model_id):
-        return call_openai(prompt, model_id)
-    return call_gemini(prompt, model_id)
+        return fix_encoding(call_openai(prompt, model_id))
+    return fix_encoding(call_gemini(prompt, model_id))
+
+# ── Encoding fix (UTF-8 mojibake: â€" → —, â€™ → ' etc.) ─────────────────────
+def fix_encoding(text):
+    """Correct text where UTF-8 bytes were mis-decoded as Latin-1/Windows-1252."""
+    try:
+        return text.encode('latin-1').decode('utf-8')
+    except (UnicodeDecodeError, UnicodeEncodeError):
+        return text
 
 # ── JSON parser ───────────────────────────────────────────────────────────────
 def parse_json(text, role):
@@ -384,17 +392,11 @@ def build_validator(problem, cycle, solver, critic):
 # ── Results ───────────────────────────────────────────────────────────────────
 res_ph = st.empty()
 
-def render_results(history):
-    if not history: return
-    def tags(items): return "".join(f'<span class="tag">{x}</span>' for x in (items or []))
-    with res_ph.container():
-        tab_labels = [f"Cycle {h['cycle']}" for h in history]
-        tabs = st.tabs(tab_labels)
-        for tab, h in zip(tabs, history):
-            s, c, v = h["solver"], h["critic"], h["validator"]
-            verdict = v.get("verdict", "?"); score = v.get("score", "?")
-            with tab:
-                html = f'''
+def _cycle_html(h, tags):
+    """Return HTML for one cycle's agent cards."""
+    s, c, v = h["solver"], h["critic"], h["validator"]
+    verdict = v.get("verdict","?"); score = v.get("score","?")
+    html = f'''
     <div class="agent-card">
       <div class="agent-header"><span class="badge badge-solver">SOLVER</span> Confidence: {s.get("confidence","?")}/10</div>
       <div class="field-label">Solution</div><div class="field-value">{s.get("solution","")}</div>
@@ -416,9 +418,31 @@ def render_results(history):
       <div class="field-label">Criteria failed</div><div class="field-value">{tags(v.get("criteria_failed",[]))}</div>
       <div class="field-label">Rationale</div><div class="field-value" style="color:#8899bb;font-size:.85rem">{v.get("rationale","")}</div>
     </div>'''
-                if v.get("final_answer"):
-                    html += f'<div class="final-card"><div class="final-title">⭐ Final Answer</div><div class="final-text">{v["final_answer"]}</div></div>'
-                st.markdown(html, unsafe_allow_html=True)
+    if v.get("final_answer"):
+        html += f'<div class="final-card"><div class="final-title">⭐ Final Answer</div><div class="final-text">{v["final_answer"]}</div></div>'
+    return html
+
+def render_results(history, live=False):
+    """live=True: stacked HTML in placeholder (during run).
+       live=False: native st.tabs() rendered in-place (after run)."""
+    if not history: return
+    def tags(items): return "".join(f'<span class="tag">{x}</span>' for x in (items or []))
+
+    if live:
+        # During the run: stack all cycles as plain HTML so updates work reliably
+        combined = ""
+        for h in history:
+            combined += f'<div style="font-size:.78rem;font-weight:700;color:#4f72f5;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px;">Cycle {h["cycle"]}</div>'
+            combined += _cycle_html(h, tags)
+        res_ph.markdown(combined, unsafe_allow_html=True)
+    else:
+        # After run: clear placeholder, render proper clickable tabs below it
+        res_ph.empty()
+        tab_labels = [f"Cycle {h['cycle']}" for h in history]
+        tabs = st.tabs(tab_labels)
+        for tab, h in zip(tabs, history):
+            with tab:
+                st.markdown(_cycle_html(h, tags), unsafe_allow_html=True)
 
 # ── Run ───────────────────────────────────────────────────────────────────────
 if run_btn:
@@ -457,7 +481,7 @@ if run_btn:
                     "ok" if verdict=="approved" else "warn")
 
                 st.session_state.history.append({"cycle":cycle,"solver":solver,"critic":critic,"validator":validator})
-                render_results(st.session_state.history)
+                render_results(st.session_state.history, live=True)
 
                 if verdict == "approved":
                     log(f"✅ Approved on cycle {cycle}. Done!", "ok"); break
@@ -472,7 +496,7 @@ if run_btn:
             st.session_state.running = False
 
 if st.session_state.history and not st.session_state.running:
-    render_results(st.session_state.history)
+    render_results(st.session_state.history, live=False)
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown("""

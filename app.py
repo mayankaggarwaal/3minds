@@ -25,6 +25,7 @@ html,body,[data-testid="stApp"]{
 .hero-logo{font-size:clamp(3.5rem,10vw,6.5rem);font-weight:900;letter-spacing:-.03em;color:#ffffff;display:inline-block;line-height:1.05;margin-bottom:8px;}
 .hero-tag{font-size:clamp(2rem,5vw,3.8rem);color:#e8e8f0;margin-top:4px;letter-spacing:-.02em;font-weight:900;line-height:1.1;}
 .hero-validate{font-size:clamp(2rem,5vw,3.8rem);font-weight:900;letter-spacing:-.02em;line-height:1.1;background:linear-gradient(135deg,#5b7fff,#7dd4f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;}
+.validate-word{background:linear-gradient(135deg,#5b7fff,#7dd4f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .pipe-row{display:flex;gap:10px;align-items:center;margin-bottom:18px;}
 .pipe-step{flex:1;background:#0d1528;border:1px solid #1a2a4a;border-radius:12px;padding:14px 10px;text-align:center;transition:all .3s;}
 .pipe-step.thinking{border-color:#4f72f5;box-shadow:0 0 18px rgba(79,114,245,.35);}
@@ -116,9 +117,8 @@ with st.sidebar:
 # ── Hero ──────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="hero-wrap">
-  <div class="hero-logo">3minds</div>
-  <div class="hero-tag">Think. Question.</div>
-  <div class="hero-validate">Validate.</div>
+  <div class="hero-logo">3minds…</div>
+  <div class="hero-tag">Think Question <span class="validate-word">Validate</span></div>
 </div>
 """, unsafe_allow_html=True)
 

@@ -438,11 +438,24 @@ async function countdown(secs){
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 // ── API calls ─────────────────────────────────────────────────────────────────
-// Fix UTF-8 mojibake (â€" → —, â€™ → ' etc.)
+// Fix UTF-8 bytes mis-decoded as Windows-1252 (cp1252)
+// e.g. â€" → —   â€™ → '   â€˜ → '
 function fixEncoding(str){
+  // cp1252 special range 0x80-0x9F → Unicode codepoints
+  const cp1252={0x80:0x20AC,0x82:0x201A,0x83:0x192,0x84:0x201E,0x85:0x2026,
+    0x86:0x2020,0x87:0x2021,0x88:0x2C6,0x89:0x2030,0x8A:0x160,0x8B:0x2039,
+    0x8C:0x152,0x8E:0x17D,0x91:0x2018,0x92:0x2019,0x93:0x201C,0x94:0x201D,
+    0x95:0x2022,0x96:0x2013,0x97:0x2014,0x98:0x2DC,0x99:0x2122,0x9A:0x161,
+    0x9B:0x203A,0x9C:0x153,0x9E:0x17E,0x9F:0x178};
+  // Reverse: unicode codepoint → cp1252 byte
+  const rev={};
+  for(const [b,u] of Object.entries(cp1252)) rev[u]=parseInt(b);
   try{
     const bytes=new Uint8Array(str.length);
-    for(let i=0;i<str.length;i++) bytes[i]=str.charCodeAt(i)&0xff;
+    for(let i=0;i<str.length;i++){
+      const cp=str.charCodeAt(i);
+      bytes[i]=(cp in rev)?rev[cp]:(cp&0xFF);
+    }
     return new TextDecoder('utf-8').decode(bytes);
   }catch(e){ return str; }
 }
@@ -522,6 +535,7 @@ RULES:
 - Go one level deeper than the obvious answer — what do most people miss?
 - On later cycles, substantially revise based on Critic feedback and show examples they hadn't considered.
 - Write as if explaining to a smart friend, not an expert — clear, jargon-free, and easy to follow. Use short relatable scenarios ("imagine you're a…") to make abstract ideas click.
+- Use at least one unexpected, intriguing analogy from a completely different domain (science, sports, history, nature, film) — the more surprising the parallel, the better it sticks.
 Respond ONLY with JSON: {"role":"solver","cycle":<int>,"solution":"<rich solution with inline examples>","reasoning":"<reasoning with named examples>","changes_from_previous":"<changes or N/A>","confidence":<0-10>}`;
 
 const CRITIC_SYS=`You are the Critic agent in a three-minds deliberation system. You are a rigorous, intellectually fearless contrarian who finds what everyone else misses.
@@ -532,6 +546,7 @@ RULES:
 - Don't list vague concerns — make each weakness concrete and story-driven.
 - Comfort is a red flag: if the Solver's answer sounds too clean, dig harder.
 - Keep language crisp and accessible — critique should feel like a sharp conversation, not an academic paper. Use brief "what if…" scenarios to make each concern tangible.
+- Each weakness must come with a vivid analogy or mini-story from an unexpected domain — make the critique memorable, not just correct.
 Respond ONLY with JSON: {"role":"critic","cycle":<int>,"strengths":["..."],"weaknesses":["..."],"missing_cases":["..."],"improvement_suggestions":["..."],"overall_critique":"..."}`;
 
 const VALIDATOR_SYS=`You are the Validator agent in a three-minds deliberation system. You are the final arbiter — rigorous, fair, focused on real-world usefulness.
@@ -541,6 +556,7 @@ RULES:
 - Write final_answer as a punchy, memorable insight — the kind of thing someone would screenshot and share. Ground it in at least one vivid real-world example so it lands, not just floats.
 - If you approve, your final_answer should feel like the distilled wisdom of the whole debate.
 - Write everything so a 16-year-old curious person could understand it — no jargon walls, no abstract hand-waving. Use a short scenario or mini-story in final_answer to make the insight land.
+- The final_answer must contain one sharp, surprising analogy that reframes the whole problem — something that makes the reader think 'I never thought of it that way.'
 - Verdict: approved / needs_revision / rejected.
 Respond ONLY with JSON: {"role":"validator","cycle":<int>,"verdict":"approved|needs_revision|rejected","score":<0-10>,"criteria_met":["..."],"criteria_failed":["..."],"rationale":"...","final_answer":"..."}`;
 

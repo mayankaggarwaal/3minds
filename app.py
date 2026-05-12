@@ -323,10 +323,14 @@ def call_model(prompt, model_id):
 
 # ── Encoding fix (UTF-8 mojibake: â€" → —, â€™ → ' etc.) ─────────────────────
 def fix_encoding(text):
-    """Correct text where UTF-8 bytes were mis-decoded as Latin-1/Windows-1252."""
+    """Correct text where UTF-8 bytes were mis-decoded as Windows-1252/cp1252.
+    e.g. â€" → —, â€™ → ', â€˜ → '
+    Root cause: cp1252 maps 0x80→€ 0x93→" 0x94→" 0x96→– 0x97→— etc.
+    so UTF-8 multi-byte sequences appear as those cp1252 glyphs.
+    """
     try:
-        return text.encode('latin-1').decode('utf-8')
-    except (UnicodeDecodeError, UnicodeEncodeError):
+        return text.encode('cp1252').decode('utf-8')
+    except (UnicodeEncodeError, UnicodeDecodeError):
         return text
 
 # ── JSON parser ───────────────────────────────────────────────────────────────
@@ -353,6 +357,7 @@ RULES:
 - Go one level deeper than the obvious answer — what do most people miss?
 - On later cycles, substantially revise based on Critic feedback and show examples they hadn't considered.
 - Write as if explaining to a smart friend, not an expert — clear, jargon-free, and easy to follow. Use short relatable scenarios ("imagine you're a…") to make abstract ideas click.
+- Use at least one unexpected, intriguing analogy from a completely different domain (science, sports, history, nature, film) — the more surprising the parallel, the better it sticks.
 Respond ONLY with JSON: {"role":"solver","cycle":<int>,"solution":"<rich solution with inline examples>","reasoning":"<reasoning with named examples>","changes_from_previous":"<changes or N/A>","confidence":<0-10>}"""
 
 CRITIC_SYS = """You are the Critic agent in a three-minds deliberation system. You are a rigorous, intellectually fearless contrarian who finds what everyone else misses.
@@ -363,6 +368,7 @@ RULES:
 - Don't list vague concerns — make each weakness concrete and story-driven.
 - Comfort is a red flag: if the Solver's answer sounds too clean, dig harder.
 - Keep language crisp and accessible — critique should feel like a sharp conversation, not an academic paper. Use brief "what if…" scenarios to make each concern tangible.
+- Each weakness must come with a vivid analogy or mini-story from an unexpected domain — make the critique memorable, not just correct.
 Respond ONLY with JSON: {"role":"critic","cycle":<int>,"strengths":["..."],"weaknesses":["..."],"missing_cases":["..."],"improvement_suggestions":["..."],"overall_critique":"..."}"""
 
 VALIDATOR_SYS = """You are the Validator agent in a three-minds deliberation system. You are the final arbiter — rigorous, fair, focused on real-world usefulness.
@@ -372,6 +378,7 @@ RULES:
 - Write final_answer as a punchy, memorable insight — the kind of thing someone would screenshot and share. Ground it in at least one vivid real-world example so it lands, not just floats.
 - If you approve, your final_answer should feel like the distilled wisdom of the whole debate.
 - Write everything so a 16-year-old curious person could understand it — no jargon walls, no abstract hand-waving. Use a short scenario or mini-story in final_answer to make the insight land.
+- The final_answer must contain one sharp, surprising analogy that reframes the whole problem — something that makes the reader think 'I never thought of it that way.'
 - Verdict: approved / needs_revision / rejected.
 Respond ONLY with JSON: {"role":"validator","cycle":<int>,"verdict":"approved|needs_revision|rejected","score":<0-10>,"criteria_met":["..."],"criteria_failed":["..."],"rationale":"...","final_answer":"..."}"""
 

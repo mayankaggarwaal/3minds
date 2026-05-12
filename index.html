@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>3minds — Think. Question. Validate.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:radial-gradient(ellipse at 50% -10%,#1a2a5e 0%,#0a0f28 35%,#070b18 70%,#050810 100%);
+  --surface:#0d1528;
+  --surface2:#111827;
+  --border:#1a2a4a;
+  --accent:#4f72f5;
+  --accent2:#82a8ff;
+  --text:#e8e8f0;
+  --muted:#8899bb;
+  --ok:#10b981;
+  --warn:#f59e0b;
+  --err:#ef4444;
+}
+html{min-height:100%;}
+body{
+  min-height:100vh;
+  background:var(--bg);
+  background-attachment:fixed;
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  line-height:1.6;
+}
+a{color:var(--accent);text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+/* ── Layout ── */
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 60px;}
+
+/* ── Hero ── */
+.hero{text-align:center;padding:60px 20px 40px;}
+.hero-logo{
+  font-size:clamp(3rem,10vw,5.5rem);
+  font-weight:900;letter-spacing:-.03em;
+  color:#ffffff;display:block;line-height:1.05;margin-bottom:10px;
+}
+.hero-tag{
+  font-size:clamp(1.4rem,4vw,2.6rem);
+  font-weight:900;letter-spacing:-.02em;color:#e8e8f0;
+}
+.hero-tag .validate{
+  background:linear-gradient(135deg,#5b7fff,#7dd4f8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* ── Settings expander ── */
+.expander{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;margin-bottom:20px;overflow:hidden;
+}
+.expander-header{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 20px;cursor:pointer;user-select:none;
+  font-weight:600;font-size:.95rem;
+}
+.expander-header:hover{background:rgba(255,255,255,.03);}
+.expander-arrow{transition:transform .2s;font-size:.8rem;color:var(--muted);}
+.expander.open .expander-arrow{transform:rotate(90deg);}
+.expander-body{display:none;padding:20px;border-top:1px solid var(--border);}
+.expander.open .expander-body{display:block;}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+@media(max-width:640px){.settings-grid{grid-template-columns:1fr;}}
+
+/* ── Form elements ── */
+.field{margin-bottom:14px;}
+.field label{
+  display:block;font-size:.72rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.05em;
+  color:var(--muted);margin-bottom:5px;
+}
+.field input,.field select,.field textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:9px 12px;
+  font-size:.9rem;font-family:'Inter',sans-serif;outline:none;
+  transition:border-color .2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);}
+.field select option{background:#111827;}
+.field textarea{resize:vertical;min-height:90px;}
+.field-hint{font-size:.72rem;color:var(--muted);margin-top:4px;}
+.field-hint a{color:var(--accent);}
+.section-label{
+  font-size:.72rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);margin-bottom:10px;margin-top:4px;
+}
+.cli-status{
+  background:#0b1220;border:1px solid var(--border);border-radius:8px;
+  padding:8px 12px;font-size:.75rem;color:var(--muted);line-height:1.9;margin-top:8px;
+}
+.cli-status span{color:var(--warn);}
+
+/* ── Run button ── */
+.run-btn{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;border-radius:10px;
+  font-size:1rem;font-weight:700;cursor:pointer;
+  transition:opacity .2s,transform .2s;margin-top:4px;
+}
+.run-btn:hover{opacity:.9;transform:translateY(-1px);}
+.run-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.spin{display:inline-block;animation:spin .7s linear infinite;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Pipeline ── */
+.pipeline{display:flex;gap:10px;align-items:center;margin:20px 0;}
+.pipe-step{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:14px 10px;text-align:center;transition:all .3s;
+}
+.pipe-step.thinking{border-color:var(--accent);box-shadow:0 0 18px rgba(79,114,245,.3);}
+.pipe-step.done-solver{border-color:var(--accent);}
+.pipe-step.done-critic{border-color:var(--warn);}
+.pipe-step.done-validator{border-color:var(--ok);}
+.pipe-step.error{border-color:var(--err);}
+.pipe-icon{font-size:1.5rem;}
+.pipe-label{font-weight:700;font-size:.88rem;margin-top:4px;}
+.pipe-status{font-size:.73rem;color:var(--muted);margin-top:2px;}
+.pipe-arrow{color:var(--border);font-size:1.2rem;flex:0;}
+
+/* ── Log ── */
+.log-box{
+  background:#060c18;border:1px solid var(--border);border-radius:10px;
+  padding:12px 16px;font-family:monospace;font-size:.78rem;
+  max-height:200px;overflow-y:auto;line-height:1.7;margin-bottom:16px;
+  display:none;
+}
+.log-box.visible{display:block;}
+.log-info{color:var(--muted);}
+.log-ok{color:var(--ok);}
+.log-warn{color:var(--warn);}
+.log-err{color:var(--err);}
+
+/* ── Agent cards ── */
+.agent-card{
+  background:#0b1220;border:1px solid var(--border);
+  border-radius:12px;padding:18px 20px;margin-bottom:12px;
+}
+.agent-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-weight:700;}
+.badge{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;}
+.badge-solver{background:rgba(79,114,245,.15);color:var(--accent);}
+.badge-critic{background:rgba(245,158,11,.15);color:var(--warn);}
+.badge-validator{background:rgba(16,185,129,.15);color:var(--ok);}
+.field-label{font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.field-value{font-size:.9rem;line-height:1.6;margin-bottom:12px;}
+.tag{display:inline-block;padding:2px 8px;margin:2px;border-radius:20px;font-size:.75rem;background:var(--surface2);color:#c8d8f0;}
+.score-pill{display:inline-block;padding:3px 12px;border-radius:20px;font-weight:700;font-size:.8rem;background:rgba(16,185,129,.15);color:var(--ok);margin-left:8px;}
+.verdict-approved{color:var(--ok);font-weight:700;}
+.verdict-needs_revision{color:var(--warn);font-weight:700;}
+.verdict-rejected{color:var(--err);font-weight:700;}
+
+/* ── Cycle tabs ── */
+.cycle-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.cycle-tab{
+  padding:5px 16px;border-radius:20px;font-size:.78rem;font-weight:700;
+  cursor:pointer;border:none;background:var(--surface2);color:var(--muted);
+}
+.cycle-tab.active{background:var(--accent);color:#fff;}
+
+/* ── Final answer ── */
+.final-card{
+  background:linear-gradient(135deg,rgba(79,114,245,.08),rgba(130,168,255,.08));
+  border:1px solid var(--accent);border-radius:16px;padding:28px;margin-top:16px;
+}
+.final-title{font-size:.88rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+.final-text{font-size:1.05rem;line-height:1.8;}
+
+/* ── Footer ── */
+.footer{text-align:center;padding:30px 0 10px;font-size:.78rem;color:var(--muted);}
+.footer a{color:var(--accent);}
+
+/* ── Mobile ── */
+@media(max-width:640px){
+  .pipeline{flex-wrap:wrap;}
+  .pipe-arrow{display:none;}
+  .pipe-step{min-width:80px;}
+  .agent-card,.final-card{padding:14px;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="hero-logo">3minds…</span>
+    <div class="hero-tag">Think Question <span class="validate">Validate</span></div>
+  </div>
+
+  <!-- Settings expander -->
+  <div class="expander" id="settingsExpander">
+    <div class="expander-header" onclick="toggleExpander()">
+      <span>⚙️</span>
+      <span>Settings</span>
+      <span class="expander-arrow" id="expanderArrow">›</span>
+    </div>
+    <div class="expander-body">
+      <div class="settings-grid">
+        <!-- Left: API Keys -->
+        <div>
+          <div class="section-label">API Keys</div>
+          <div class="field">
+            <label>Gemini API Key <a href="https://aistudio.google.com/app/apikey" target="_blank">get key ↗</a></label>
+            <input type="password" id="geminiKey" placeholder="AIza…"/>
+          </div>
+          <div class="field">
+            <label>OpenAI API Key <a href="https://platform.openai.com/api-keys" target="_blank">get key ↗</a></label>
+            <input type="password" id="openaiKey" placeholder="sk-…"/>
+          </div>
+          <div class="section-label" style="margin-top:14px;">Local Providers</div>
+          <div class="field">
+            <label>Ollama URL</label>
+            <input type="text" id="ollamaUrl" value="http://localhost:11434"/>
+          </div>
+          <div class="field">
+            <label>Ollama model</label>
+            <input type="text" id="ollamaModel" value="llama3.2"/>
+          </div>
+          <div class="cli-status">
+            ⚡ Want Claude CLI or Codex CLI?<br>
+            <span>Download & run locally:</span> <code>streamlit run app.py</code>
+          </div>
+        </div>
+        <!-- Right: Models -->
+        <div>
+          <div class="section-label">Model per role</div>
+          <div class="field">
+            <label>🧠 Solver model</label>
+            <select id="solverModel">
+              <option value="gemini-2.5-flash" selected>gemini-2.5-flash (free)</option>
+              <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite (free)</option>
+              <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+              <option value="gpt-4o">gpt-4o (OpenAI)</option>
+              <option value="gpt-4o-mini">gpt-4o-mini (OpenAI)</option>
+              <option value="o3-mini">o3-mini (OpenAI)</option>
+              <option value="ollama">Ollama (local)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>🔍 Critic model</label>
+            <select id="criticModel">
+              <option value="gemini-2.5-flash" selected>gemini-2.5-flash (free)</option>
+              <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite (free)</option>
+              <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+              <option value="gpt-4o">gpt-4o (OpenAI)</option>
+              <option value="gpt-4o-mini">gpt-4o-mini (OpenAI)</option>
+              <option value="o3-mini">o3-mini (OpenAI)</option>
+              <option value="ollama">Ollama (local)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>✅ Validator model</label>
+            <select id="validatorModel">
+              <option value="gemini-2.5-flash" selected>gemini-2.5-flash (free)</option>
+              <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite (free)</option>
+              <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro</option>
+              <option value="gpt-4o">gpt-4o (OpenAI)</option>
+              <option value="gpt-4o-mini">gpt-4o-mini (OpenAI)</option>
+              <option value="o3-mini">o3-mini (OpenAI)</option>
+              <option value="ollama">Ollama (local)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Cycles</label>
+            <select id="cyclesSelect">
+              <option value="1">1 cycle</option>
+              <option value="2" selected>2 cycles</option>
+              <option value="3">3 cycles</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem input -->
+  <div class="field">
+    <label>What do you want the three minds to deliberate on?</label>
+    <textarea id="problemInput" rows="3">What should I be known for 10 years from now?</textarea>
+  </div>
+  <button class="run-btn" id="runBtn" onclick="startDeliberation()">▶ Run Deliberation</button>
+
+  <!-- Pipeline -->
+  <div class="pipeline" id="pipeline" style="display:none;">
+    <div class="pipe-step waiting" id="step-solver">
+      <div class="pipe-icon">🧠</div>
+      <div class="pipe-label">Solver</div>
+      <div class="pipe-status" id="status-solver">Waiting</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step waiting" id="step-critic">
+      <div class="pipe-icon">🔍</div>
+      <div class="pipe-label">Critic</div>
+      <div class="pipe-status" id="status-critic">Waiting</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step waiting" id="step-validator">
+      <div class="pipe-icon">✅</div>
+      <div class="pipe-label">Validator</div>
+      <div class="pipe-status" id="status-validator">Waiting</div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="log-box" id="logBox"></div>
+
+  <!-- Results -->
+  <div id="results"></div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <a href="https://github.com/mayankaggarwaal/3minds" target="_blank">GitHub</a> ·
+    <a href="https://github.com/mayankaggarwaal" target="_blank">@mayankaggarwaal</a> ·
+    Run locally: <code>streamlit run app.py</code>
+  </div>
+</div>
+
+<script>
+// ── localStorage persistence ──────────────────────────────────────────────────
+const PERSIST = [
+  ["geminiKey","gk"],["openaiKey","ok"],["ollamaUrl","ou"],["ollamaModel","om"],
+  ["solverModel","sm"],["criticModel","cm"],["validatorModel","vm"],["cyclesSelect","cs"]
+];
+const VALID_MODELS = ["gemini-2.5-flash","gemini-2.5-flash-lite-preview-06-17","gemini-2.5-pro-preview-06-05","gpt-4o","gpt-4o-mini","o3-mini","ollama"];
+(function(){
+  PERSIST.forEach(([id,key])=>{
+    const el=document.getElementById(id); if(!el) return;
+    const v=localStorage.getItem("3m_"+key);
+    if(v){
+      if(el.tagName==="SELECT" && !VALID_MODELS.includes(v) && !["1","2","3"].includes(v)) return;
+      el.value=v;
+    }
+    el.addEventListener("change",()=>localStorage.setItem("3m_"+key,el.value));
+    if(el.tagName==="INPUT") el.addEventListener("input",()=>localStorage.setItem("3m_"+key,el.value));
+  });
+})();
+
+// ── Expander ──────────────────────────────────────────────────────────────────
+function toggleExpander(){
+  document.getElementById("settingsExpander").classList.toggle("open");
+}
+
+// ── Log ───────────────────────────────────────────────────────────────────────
+function log(msg, t="info"){
+  const box = document.getElementById("logBox");
+  box.classList.add("visible");
+  const ts = new Date().toLocaleTimeString("en-GB",{hour12:false});
+  const d = document.createElement("div");
+  d.className = "log-"+t;
+  d.textContent = `[${ts}] ${msg}`;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+// ── Pipeline ──────────────────────────────────────────────────────────────────
+function setStep(role, state){
+  const step = document.getElementById("step-"+role);
+  const stat = document.getElementById("status-"+role);
+  step.className = "pipe-step " + (state==="waiting"?"waiting":state);
+  const labels={waiting:"Waiting",thinking:"Thinking…","done-solver":"Done ✓","done-critic":"Done ✓","done-validator":"Done ✓",error:"Error ✗"};
+  stat.textContent = labels[state]||"Waiting";
+}
+
+// ── Rate limiter ──────────────────────────────────────────────────────────────
+const RL={ts:[],CAP:14,
+  async acquire(){
+    const now=Date.now();
+    this.ts=this.ts.filter(t=>t>now-60000);
+    if(this.ts.length>=this.CAP){
+      const wait=Math.ceil((this.ts[0]+60100-Date.now())/1000);
+      log(`🚦 RPM cap — waiting ${wait}s…`,"warn");
+      await countdown(wait);
+    }
+    this.ts.push(Date.now());
+    log(`📊 RPM ${this.ts.length}/${this.CAP} — dispatched`,"info");
+  }
+};
+
+async function countdown(secs){
+  for(let s=secs;s>0;s--){
+    await sleep(1000);
+    if(s%10===0||s<=5) log(`   ⏱ ${s}s…`,"info");
+  }
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+// ── API calls ─────────────────────────────────────────────────────────────────
+async function callGemini(prompt, modelId, retry=0){
+  const key = document.getElementById("geminiKey").value.trim();
+  if(!key) throw new Error("Gemini API key missing — open Settings");
+  await RL.acquire();
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${key}`;
+  const resp=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],
+      generationConfig:{temperature:0.7,maxOutputTokens:4096,responseMimeType:"application/json"}})});
+  if(resp.status===429){
+    const ed=await resp.json().catch(()=>({}));
+    const msg=ed?.error?.message||"";
+    if(/per.?day|daily.?quota|resource.*exhausted/i.test(msg))
+      throw new Error("Daily Gemini quota exhausted — resets at midnight Pacific.");
+    if(retry>=4) throw new Error("Rate limited after 4 retries.");
+    const m=msg.match(/retry[^0-9]*(after|in)\s*([\d.]+)\s*s/i);
+    const wait=(m?Math.ceil(parseFloat(m[2])):Math.min(120,15*Math.pow(2,retry)))+8;
+    log(`⏳ Rate limited — waiting ${wait}s (attempt ${retry+1}/4)…`,"warn");
+    await countdown(wait);
+    return callGemini(prompt,modelId,retry+1);
+  }
+  if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(`Gemini ${resp.status}: ${e?.error?.message||resp.statusText}`);}
+  const d=await resp.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||"";
+}
+
+async function callOpenAI(prompt, modelId){
+  const key=document.getElementById("openaiKey").value.trim();
+  if(!key) throw new Error("OpenAI API key missing — open Settings");
+  const isO=/^o\d/i.test(modelId);
+  const body={model:modelId,messages:[{role:"user",content:prompt}],max_completion_tokens:4096};
+  if(!isO){body.temperature=0.7;body.response_format={type:"json_object"};}
+  const resp=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body:JSON.stringify(body)});
+  if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(`OpenAI ${resp.status}: ${e?.error?.message||resp.statusText}`);}
+  return (await resp.json()).choices?.[0]?.message?.content||"";
+}
+
+async function callOllama(prompt){
+  const url=(document.getElementById("ollamaUrl").value.trim()||"http://localhost:11434")+"/api/chat";
+  const model=document.getElementById("ollamaModel").value.trim()||"llama3.2";
+  const resp=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({model,messages:[{role:"user",content:prompt}],stream:false,format:"json"})});
+  if(!resp.ok) throw new Error(`Ollama ${resp.status}: ${resp.statusText}`);
+  return (await resp.json()).message?.content||"";
+}
+
+function callModel(prompt, modelId){
+  if(modelId==="ollama") return callOllama(prompt);
+  if(/^gpt-|^o\d/i.test(modelId)) return callOpenAI(prompt,modelId);
+  return callGemini(prompt,modelId);
+}
+
+// ── JSON parser ───────────────────────────────────────────────────────────────
+function parseJSON(text, role){
+  let t=text.trim().replace(/^```json\s*/i,"").replace(/^```\s*/,"").replace(/\s*```$/,"").trim();
+  try{return JSON.parse(t);}catch(e){}
+  const s=t.indexOf("{"),en=t.lastIndexOf("}");
+  if(s!==-1&&en>s){try{return JSON.parse(t.slice(s,en+1));}catch(e){}}
+  const fb={
+    solver:{role:"solver",cycle:0,solution:text,reasoning:"(raw)",changes_from_previous:"N/A",confidence:5},
+    critic:{role:"critic",cycle:0,strengths:[],weaknesses:[text],missing_cases:[],improvement_suggestions:[],overall_critique:text},
+    validator:{role:"validator",cycle:0,verdict:"needs_revision",score:5,criteria_met:[],criteria_failed:[],rationale:text,final_answer:text}
+  };
+  return fb[role]||{role:"unknown",raw:text};
+}
+
+// ── Prompts ───────────────────────────────────────────────────────────────────
+const SOLVER_SYS=`You are the Solver agent in a three-minds deliberation system. You are known for producing intellectually rich, research-backed answers that surprise people with depth.
+RULES: Anchor claims to real research/named studies/examples. Use 2+ non-obvious examples. Go one level deeper than the obvious answer. On later cycles, substantially revise based on feedback.
+Respond ONLY with JSON: {"role":"solver","cycle":<int>,"solution":"<rich solution>","reasoning":"<reasoning>","changes_from_previous":"<changes or N/A>","confidence":<0-10>}`;
+
+const CRITIC_SYS=`You are the Critic agent in a three-minds deliberation system. You are a rigorous, intellectually fearless contrarian who finds what everyone else misses.
+RULES: Find non-trivial weaknesses. Find at least one angle the Solver completely missed. Back every weakness with a reason or example. Comfort is a red flag.
+Respond ONLY with JSON: {"role":"critic","cycle":<int>,"strengths":["..."],"weaknesses":["..."],"missing_cases":["..."],"improvement_suggestions":["..."],"overall_critique":"..."}`;
+
+const VALIDATOR_SYS=`You are the Validator agent in a three-minds deliberation system. You are the final arbiter — rigorous, fair, focused on real-world usefulness.
+RULES: Score honestly. Write final_answer as something quotable and worth sharing. Verdict: approved/needs_revision/rejected.
+Respond ONLY with JSON: {"role":"validator","cycle":<int>,"verdict":"approved|needs_revision|rejected","score":<0-10>,"criteria_met":["..."],"criteria_failed":["..."],"rationale":"...","final_answer":"..."}`;
+
+function buildSolver(problem,cycle,history){
+  let p=SOLVER_SYS+`\n\n## Problem\n\n${problem}`;
+  if(history.length) p+="\n\n## Previous feedback\n"+history.map(h=>`\nCycle ${h.cycle} Critic: ${JSON.stringify(h.critic)}\nCycle ${h.cycle} Validator: ${JSON.stringify(h.validator)}`).join("");
+  return p+`\n\nProduce cycle ${cycle} ${cycle===1?"initial":"revised"} solution.`;
+}
+function buildCritic(problem,cycle,solver){
+  return CRITIC_SYS+`\n\n## Problem\n\n${problem}\n\n## Solver (cycle ${cycle})\n\n${JSON.stringify(solver)}\n\nCritique now.`;
+}
+function buildValidator(problem,cycle,solver,critic){
+  return VALIDATOR_SYS+`\n\n## Problem\n\n${problem}\n\n## Solver (cycle ${cycle})\n${JSON.stringify(solver)}\n\n## Critic (cycle ${cycle})\n${JSON.stringify(critic)}\n\nValidate now.`;
+}
+
+// ── Render results ────────────────────────────────────────────────────────────
+let allHistory=[];
+
+function tags(arr){return(arr||[]).map(x=>`<span class="tag">${x}</span>`).join("");}
+
+function renderResults(){
+  const el=document.getElementById("results");
+  if(!allHistory.length){el.innerHTML="";return;}
+  const tabs=allHistory.map((h,i)=>`<button class="cycle-tab${i===allHistory.length-1?" active":""}" onclick="showCycle(${i})" id="tab-${i}">Cycle ${h.cycle}</button>`).join("");
+  const last=allHistory[allHistory.length-1];
+  el.innerHTML=`<div class="cycle-tabs">${tabs}</div><div id="cycleContent"></div>`;
+  showCycle(allHistory.length-1);
+}
+
+function showCycle(idx){
+  document.querySelectorAll(".cycle-tab").forEach((t,i)=>t.classList.toggle("active",i===idx));
+  const h=allHistory[idx];
+  const s=h.solver,c=h.critic,v=h.validator;
+  const verdict=v.verdict||"?";
+  document.getElementById("cycleContent").innerHTML=`
+    <div class="agent-card">
+      <div class="agent-header"><span class="badge badge-solver">SOLVER</span> Confidence: ${s.confidence||"?"}/10</div>
+      <div class="field-label">Solution</div><div class="field-value">${s.solution||""}</div>
+      <div class="field-label">Reasoning</div><div class="field-value" style="color:var(--muted);font-size:.85rem">${s.reasoning||""}</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-header"><span class="badge badge-critic">CRITIC</span></div>
+      <div class="field-label">Strengths</div><div class="field-value">${tags(c.strengths)}</div>
+      <div class="field-label">Weaknesses</div><div class="field-value">${tags(c.weaknesses)}</div>
+      <div class="field-label">Missing cases</div><div class="field-value">${tags(c.missing_cases)}</div>
+      <div class="field-label">Overall</div><div class="field-value" style="color:var(--warn)">${c.overall_critique||""}</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-header">
+        <span class="badge badge-validator">VALIDATOR</span>
+        <span class="verdict-${verdict}">${verdict.toUpperCase()}</span>
+        <span class="score-pill">${v.score||"?"}/10</span>
+      </div>
+      <div class="field-label">Criteria met</div><div class="field-value">${tags(v.criteria_met)}</div>
+      <div class="field-label">Criteria failed</div><div class="field-value">${tags(v.criteria_failed)}</div>
+      <div class="field-label">Rationale</div><div class="field-value" style="color:var(--muted);font-size:.85rem">${v.rationale||""}</div>
+    </div>
+    ${v.final_answer?`<div class="final-card"><div class="final-title">⭐ Final Answer</div><div class="final-text">${v.final_answer}</div></div>`:""}
+  `;
+}
+
+// ── Main deliberation ─────────────────────────────────────────────────────────
+async function startDeliberation(){
+  const problem=document.getElementById("problemInput").value.trim();
+  if(!problem){alert("Enter a problem first.");return;}
+  const cycles=parseInt(document.getElementById("cyclesSelect").value);
+  const sm=document.getElementById("solverModel").value;
+  const cm=document.getElementById("criticModel").value;
+  const vm=document.getElementById("validatorModel").value;
+
+  allHistory=[];
+  document.getElementById("results").innerHTML="";
+  document.getElementById("logBox").innerHTML="";
+  document.getElementById("logBox").classList.add("visible");
+  document.getElementById("pipeline").style.display="flex";
+  ["solver","critic","validator"].forEach(r=>setStep(r,"waiting"));
+
+  const btn=document.getElementById("runBtn");
+  btn.disabled=true; btn.innerHTML=`<span class="spin">↻</span> Running…`;
+
+  try{
+    for(let cycle=1;cycle<=cycles;cycle++){
+      log(`── Cycle ${cycle}/${cycles} ──`);
+      ["solver","critic","validator"].forEach(r=>setStep(r,"waiting"));
+
+      setStep("solver","thinking");
+      log("🧠 Solver thinking…");
+      const solverRaw=await callModel(buildSolver(problem,cycle,allHistory),sm);
+      const solver=parseJSON(solverRaw,"solver"); solver.cycle=cycle;
+      setStep("solver","done-solver");
+      log(`Solver confidence: ${solver.confidence||"?"}/10`,"ok");
+
+      setStep("critic","thinking");
+      log("🔍 Critic reviewing…");
+      const criticRaw=await callModel(buildCritic(problem,cycle,solver),cm);
+      const critic=parseJSON(criticRaw,"critic"); critic.cycle=cycle;
+      setStep("critic","done-critic");
+      log(`Critic found ${(critic.weaknesses||[]).length} weaknesses`,"warn");
+
+      setStep("validator","thinking");
+      log("✅ Validator deciding…");
+      const validatorRaw=await callModel(buildValidator(problem,cycle,solver,critic),vm);
+      const validator=parseJSON(validatorRaw,"validator"); validator.cycle=cycle;
+      setStep("validator","done-validator");
+      const verdict=validator.verdict||"?";
+      log(`Verdict: ${verdict.toUpperCase()}  Score: ${validator.score||"?"}/10`,verdict==="approved"?"ok":"warn");
+
+      allHistory.push({cycle,solver,critic,validator});
+      renderResults();
+
+      if(verdict==="approved"){log(`✅ Approved on cycle ${cycle}. Done!`,"ok");break;}
+      if(cycle<cycles){log("⏸ Brief pause before next cycle…");await sleep(3000);}
+    }
+    log("🎉 Deliberation complete!","ok");
+  }catch(e){
+    log("Error: "+e.message,"err");
+  }finally{
+    btn.disabled=false; btn.innerHTML="▶ Run Deliberation";
+  }
+}
+</script>
+</body>
+</html>

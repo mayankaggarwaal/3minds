@@ -12,40 +12,40 @@ st.set_page_config(page_title="3minds", page_icon="🧠", layout="wide", initial
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-html,body,[data-testid="stApp"]{background:#0a0a0f!important;font-family:'Inter',sans-serif!important;}
+html,body,[data-testid="stApp"]{background:#0d1117!important;font-family:'Inter',sans-serif!important;}
 #MainMenu,footer{visibility:hidden;}
 [data-testid="stToolbar"]{display:none;}
-[data-testid="stSidebar"]{background:#12121a!important;border-right:1px solid #2a2a3d!important;}
-[data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea{background:#1a1a27!important;border:1px solid #2a2a3d!important;color:#e8e8f0!important;border-radius:8px!important;}
-[data-testid="stButton"]>button{background:linear-gradient(135deg,#6366f1,#8b5cf6)!important;border:none!important;color:white!important;font-weight:700!important;border-radius:10px!important;width:100%;}
+[data-testid="stSidebar"]{background:#131d2e!important;border-right:1px solid #1e3050!important;}
+[data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea{background:#1a2640!important;border:1px solid #1e3050!important;color:#e8e8f0!important;border-radius:8px!important;}
+[data-testid="stButton"]>button{background:linear-gradient(135deg,#4f72f5,#82a8ff)!important;border:none!important;color:white!important;font-weight:700!important;border-radius:10px!important;width:100%;}
 .hero-wrap{text-align:center;padding:36px 20px 24px;}
-.hero-logo{font-size:clamp(2.8rem,8vw,5rem);font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;line-height:1.1;margin-bottom:10px;}
+.hero-logo{font-size:clamp(2.8rem,8vw,5rem);font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#4f72f5,#82a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;line-height:1.1;margin-bottom:10px;}
 .hero-tag{font-size:clamp(1rem,3vw,1.4rem);color:#e8e8f0;margin-top:8px;letter-spacing:.02em;font-weight:700;}
-.hero-tag span{background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-tag span{background:linear-gradient(135deg,#4f72f5,#82a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .pipe-row{display:flex;gap:10px;align-items:center;margin-bottom:18px;}
-.pipe-step{flex:1;background:#12121a;border:1px solid #2a2a3d;border-radius:12px;padding:14px 10px;text-align:center;transition:all .3s;}
-.pipe-step.thinking{border-color:#6366f1;box-shadow:0 0 18px rgba(99,102,241,.35);}
-.pipe-step.done-solver{border-color:#6366f1;}
+.pipe-step{flex:1;background:#131d2e;border:1px solid #1e3050;border-radius:12px;padding:14px 10px;text-align:center;transition:all .3s;}
+.pipe-step.thinking{border-color:#4f72f5;box-shadow:0 0 18px rgba(99,102,241,.35);}
+.pipe-step.done-solver{border-color:#4f72f5;}
 .pipe-step.done-critic{border-color:#f59e0b;}
 .pipe-step.done-validator{border-color:#10b981;}
 .pipe-step.error{border-color:#ef4444;}
 .pipe-icon{font-size:1.5rem;}
 .pipe-label{font-weight:700;font-size:.9rem;color:#e8e8f0;margin-top:4px;}
 .pipe-status{font-size:.75rem;color:#8888aa;margin-top:2px;}
-.pipe-arrow{color:#2a2a3d;font-size:1.3rem;flex:0;}
-.log-box{background:#06060b;border:1px solid #2a2a3d;border-radius:10px;padding:12px 16px;font-family:monospace;font-size:.8rem;max-height:200px;overflow-y:auto;line-height:1.6;}
+.pipe-arrow{color:#1e3050;font-size:1.3rem;flex:0;}
+.log-box{background:#080e1a;border:1px solid #1e3050;border-radius:10px;padding:12px 16px;font-family:monospace;font-size:.8rem;max-height:200px;overflow-y:auto;line-height:1.6;}
 .log-info{color:#8888aa;}.log-ok{color:#10b981;}.log-warn{color:#f59e0b;}.log-err{color:#ef4444;}
-.agent-card{background:#0f0f18;border:1px solid #2a2a3d;border-radius:12px;padding:18px 20px;margin-bottom:12px;}
+.agent-card{background:#0f1925;border:1px solid #1e3050;border-radius:12px;padding:18px 20px;margin-bottom:12px;}
 .agent-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-weight:700;font-size:.95rem;}
 .badge{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;}
-.badge-solver{background:rgba(99,102,241,.15);color:#6366f1;}
+.badge-solver{background:rgba(99,102,241,.15);color:#4f72f5;}
 .badge-critic{background:rgba(245,158,11,.15);color:#f59e0b;}
 .badge-validator{background:rgba(16,185,129,.15);color:#10b981;}
 .field-label{font-size:.7rem;color:#8888aa;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
 .field-value{color:#e8e8f0;font-size:.9rem;line-height:1.6;margin-bottom:12px;}
-.tag{display:inline-block;padding:2px 8px;margin:2px;border-radius:20px;font-size:.75rem;background:#1a1a27;color:#c8c8e0;}
-.final-card{background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.08));border:1px solid #6366f1;border-radius:16px;padding:28px;margin-top:16px;}
-.final-title{font-size:.9rem;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+.tag{display:inline-block;padding:2px 8px;margin:2px;border-radius:20px;font-size:.75rem;background:#1a2640;color:#c8c8e0;}
+.final-card{background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.08));border:1px solid #4f72f5;border-radius:16px;padding:28px;margin-top:16px;}
+.final-title{font-size:.9rem;font-weight:700;color:#4f72f5;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
 .final-text{font-size:1.05rem;color:#e8e8f0;line-height:1.8;}
 .score-pill{display:inline-block;padding:3px 12px;border-radius:20px;font-weight:700;font-size:.82rem;background:rgba(16,185,129,.15);color:#10b981;margin-left:8px;}
 .verdict-approved{color:#10b981;font-weight:700;}
@@ -76,7 +76,7 @@ for k,v in [("log",[]),("history",[]),("running",False),("done",False),
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("<div style='padding:10px 0 16px'><span style='font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;'>3minds</span> <span style='color:#8888aa;font-size:.8rem;'>settings</span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='padding:10px 0 16px'><span style='font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,#4f72f5,#82a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;'>3minds</span> <span style='color:#8888aa;font-size:.8rem;'>settings</span></div>", unsafe_allow_html=True)
     gemini_key   = st.text_input("Gemini API Key",  type="password", placeholder="AIza…", help="aistudio.google.com — free")
     openai_key   = st.text_input("OpenAI API Key",  type="password", placeholder="sk-…")
     ollama_url   = st.text_input("Ollama URL",   value="http://localhost:11434")
@@ -88,7 +88,7 @@ with st.sidebar:
     vm = VALUES[LABELS.index(st.selectbox("✅ Validator", LABELS, index=0))]
     cycles = st.select_slider("Cycles", [1,2,3], value=2)
     st.markdown("---")
-    st.markdown("<div style='color:#8888aa;font-size:.73rem;line-height:1.7'>Open source · <a href='https://mayankaggarwaal.github.io/3minds' style='color:#6366f1;'>Web version</a> · <a href='https://github.com/mayankaggarwaal/3minds' style='color:#6366f1;'>GitHub</a></div>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#8888aa;font-size:.73rem;line-height:1.7'>Open source · <a href='https://mayankaggarwaal.github.io/3minds' style='color:#4f72f5;'>Web version</a> · <a href='https://github.com/mayankaggarwaal/3minds' style='color:#4f72f5;'>GitHub</a></div>", unsafe_allow_html=True)
 
 # ── Hero ──────────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -243,7 +243,7 @@ def render_results(history):
     s,c,v = last["solver"], last["critic"], last["validator"]
     verdict = v.get("verdict","?"); score = v.get("score","?")
     cycle_tabs = "".join(
-        f'<span style="padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:700;background:{("#6366f1" if i==len(history)-1 else "#1a1a27")};color:{("white" if i==len(history)-1 else "#8888aa")};margin-right:6px;">Cycle {h["cycle"]}</span>'
+        f'<span style="padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:700;background:{("#4f72f5" if i==len(history)-1 else "#1a2640")};color:{("white" if i==len(history)-1 else "#8888aa")};margin-right:6px;">Cycle {h["cycle"]}</span>'
         for i,h in enumerate(history)
     )
     html = f'<div style="margin-bottom:14px">{cycle_tabs}</div>'

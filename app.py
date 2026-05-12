@@ -145,9 +145,16 @@ with st.expander("⚙️  Settings", expanded=False):
         </div>""", unsafe_allow_html=True)
     with col2:
         st.markdown("<div style='font-size:.75rem;color:#8899bb;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px'>Model per role</div>", unsafe_allow_html=True)
-        sm = VALUES[LABELS.index(st.selectbox("🧠 Solver",    LABELS, index=0))]
-        cm = VALUES[LABELS.index(st.selectbox("🔍 Critic",    LABELS, index=0))]
-        vm = VALUES[LABELS.index(st.selectbox("✅ Validator", LABELS, index=0))]
+        # Default: Claude CLI > Codex CLI > Gemini
+        if claude_avail:
+            _default = LABELS.index("Claude CLI ⚡ local only")
+        elif codex_avail:
+            _default = LABELS.index("Codex CLI ⚡ local only")
+        else:
+            _default = 0  # gemini-2.5-flash (free)
+        sm = VALUES[LABELS.index(st.selectbox("🧠 Solver",    LABELS, index=_default))]
+        cm = VALUES[LABELS.index(st.selectbox("🔍 Critic",    LABELS, index=_default))]
+        vm = VALUES[LABELS.index(st.selectbox("✅ Validator", LABELS, index=_default))]
         cycles = st.select_slider("Cycles", [1,2,3], value=2)
         st.markdown("<div style='color:#8899bb;font-size:.73rem;margin-top:8px;'><a href='https://github.com/mayankaggarwaal/3minds' style='color:#4f72f5;'>GitHub</a> · <code style='color:#4f72f5;'>streamlit run app.py</code></div>", unsafe_allow_html=True)
 

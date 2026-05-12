@@ -386,15 +386,15 @@ res_ph = st.empty()
 
 def render_results(history):
     if not history: return
-    last = history[-1]
     def tags(items): return "".join(f'<span class="tag">{x}</span>' for x in (items or []))
-    s,c,v = last["solver"],last["critic"],last["validator"]
-    verdict = v.get("verdict","?"); score = v.get("score","?")
-    cycle_tabs = "".join(
-        f'<span style="padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:700;background:{("#4f72f5" if i==len(history)-1 else "#1a2640")};color:{("white" if i==len(history)-1 else "#8899bb")};margin-right:6px;">Cycle {h["cycle"]}</span>'
-        for i,h in enumerate(history))
-    html = f'<div style="margin-bottom:14px">{cycle_tabs}</div>'
-    html += f'''
+    with res_ph.container():
+        tab_labels = [f"Cycle {h['cycle']}" for h in history]
+        tabs = st.tabs(tab_labels)
+        for tab, h in zip(tabs, history):
+            s, c, v = h["solver"], h["critic"], h["validator"]
+            verdict = v.get("verdict", "?"); score = v.get("score", "?")
+            with tab:
+                html = f'''
     <div class="agent-card">
       <div class="agent-header"><span class="badge badge-solver">SOLVER</span> Confidence: {s.get("confidence","?")}/10</div>
       <div class="field-label">Solution</div><div class="field-value">{s.get("solution","")}</div>
@@ -416,9 +416,9 @@ def render_results(history):
       <div class="field-label">Criteria failed</div><div class="field-value">{tags(v.get("criteria_failed",[]))}</div>
       <div class="field-label">Rationale</div><div class="field-value" style="color:#8899bb;font-size:.85rem">{v.get("rationale","")}</div>
     </div>'''
-    if v.get("final_answer"):
-        html += f'<div class="final-card"><div class="final-title">⭐ Final Answer</div><div class="final-text">{v["final_answer"]}</div></div>'
-    res_ph.markdown(html, unsafe_allow_html=True)
+                if v.get("final_answer"):
+                    html += f'<div class="final-card"><div class="final-title">⭐ Final Answer</div><div class="final-text">{v["final_answer"]}</div></div>'
+                st.markdown(html, unsafe_allow_html=True)
 
 # ── Run ───────────────────────────────────────────────────────────────────────
 if run_btn:

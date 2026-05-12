@@ -12,7 +12,10 @@ st.set_page_config(page_title="3minds", page_icon="🧠", layout="wide", initial
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-html,body,[data-testid="stApp"]{background:#0a0f1e!important;font-family:'Inter',sans-serif!important;}
+html,body,[data-testid="stApp"]{
+  background: radial-gradient(ellipse at 50% -10%, #1a2a5e 0%, #0a0f28 35%, #070b18 70%, #050810 100%) !important;
+  font-family:'Inter',sans-serif!important;
+}
 #MainMenu,footer{visibility:hidden;}
 [data-testid="stToolbar"]{display:none;}
 [data-testid="stSidebar"]{background:#0d1528!important;border-right:1px solid #1a2a4a!important;}
@@ -21,7 +24,7 @@ html,body,[data-testid="stApp"]{background:#0a0f1e!important;font-family:'Inter'
 .hero-wrap{text-align:center;padding:60px 20px 40px;}
 .hero-logo{font-size:clamp(3.5rem,10vw,6.5rem);font-weight:900;letter-spacing:-.03em;color:#ffffff;display:inline-block;line-height:1.05;margin-bottom:8px;}
 .hero-tag{font-size:clamp(2rem,5vw,3.8rem);color:#e8e8f0;margin-top:4px;letter-spacing:-.02em;font-weight:900;line-height:1.1;}
-.hero-tag span{background:linear-gradient(135deg,#4f72f5,#82a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-validate{font-size:clamp(2rem,5vw,3.8rem);font-weight:900;letter-spacing:-.02em;line-height:1.1;background:linear-gradient(135deg,#5b7fff,#7dd4f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;}
 .pipe-row{display:flex;gap:10px;align-items:center;margin-bottom:18px;}
 .pipe-step{flex:1;background:#0d1528;border:1px solid #1a2a4a;border-radius:12px;padding:14px 10px;text-align:center;transition:all .3s;}
 .pipe-step.thinking{border-color:#4f72f5;box-shadow:0 0 18px rgba(79,114,245,.35);}
@@ -114,7 +117,8 @@ with st.sidebar:
 st.markdown("""
 <div class="hero-wrap">
   <div class="hero-logo">3minds</div>
-  <div class="hero-tag">Think. Question. <span>Validate.</span></div>
+  <div class="hero-tag">Think. Question.</div>
+  <div class="hero-validate">Validate.</div>
 </div>
 """, unsafe_allow_html=True)
 

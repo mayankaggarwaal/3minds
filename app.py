@@ -12,18 +12,18 @@ st.set_page_config(page_title="3minds", page_icon="🧠", layout="wide", initial
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-html,body,[data-testid="stApp"]{background:#0d1117!important;font-family:'Inter',sans-serif!important;}
+html,body,[data-testid="stApp"]{background:#0a0f1e!important;font-family:'Inter',sans-serif!important;}
 #MainMenu,footer{visibility:hidden;}
 [data-testid="stToolbar"]{display:none;}
-[data-testid="stSidebar"]{background:#131d2e!important;border-right:1px solid #1e3050!important;}
-[data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea{background:#1a2640!important;border:1px solid #1e3050!important;color:#e8e8f0!important;border-radius:8px!important;}
+[data-testid="stSidebar"]{background:#0d1528!important;border-right:1px solid #1a2a4a!important;}
+[data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea{background:#111827!important;border:1px solid #1a2a4a!important;color:#e8e8f0!important;border-radius:8px!important;}
 [data-testid="stButton"]>button{background:linear-gradient(135deg,#4f72f5,#82a8ff)!important;border:none!important;color:white!important;font-weight:700!important;border-radius:10px!important;width:100%;}
 .hero-wrap{text-align:center;padding:60px 20px 40px;}
 .hero-logo{font-size:clamp(3.5rem,10vw,6.5rem);font-weight:900;letter-spacing:-.03em;color:#ffffff;display:inline-block;line-height:1.05;margin-bottom:8px;}
 .hero-tag{font-size:clamp(2rem,5vw,3.8rem);color:#e8e8f0;margin-top:4px;letter-spacing:-.02em;font-weight:900;line-height:1.1;}
 .hero-tag span{background:linear-gradient(135deg,#4f72f5,#82a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .pipe-row{display:flex;gap:10px;align-items:center;margin-bottom:18px;}
-.pipe-step{flex:1;background:#131d2e;border:1px solid #1e3050;border-radius:12px;padding:14px 10px;text-align:center;transition:all .3s;}
+.pipe-step{flex:1;background:#0d1528;border:1px solid #1a2a4a;border-radius:12px;padding:14px 10px;text-align:center;transition:all .3s;}
 .pipe-step.thinking{border-color:#4f72f5;box-shadow:0 0 18px rgba(79,114,245,.35);}
 .pipe-step.done-solver{border-color:#4f72f5;}
 .pipe-step.done-critic{border-color:#f59e0b;}
@@ -33,9 +33,9 @@ html,body,[data-testid="stApp"]{background:#0d1117!important;font-family:'Inter'
 .pipe-label{font-weight:700;font-size:.9rem;color:#e8e8f0;margin-top:4px;}
 .pipe-status{font-size:.75rem;color:#8899bb;margin-top:2px;}
 .pipe-arrow{color:#1e3050;font-size:1.3rem;flex:0;}
-.log-box{background:#080e1a;border:1px solid #1e3050;border-radius:10px;padding:12px 16px;font-family:monospace;font-size:.8rem;max-height:200px;overflow-y:auto;line-height:1.6;}
+.log-box{background:#060c18;border:1px solid #1a2a4a;border-radius:10px;padding:12px 16px;font-family:monospace;font-size:.8rem;max-height:200px;overflow-y:auto;line-height:1.6;}
 .log-info{color:#8899bb;}.log-ok{color:#10b981;}.log-warn{color:#f59e0b;}.log-err{color:#ef4444;}
-.agent-card{background:#0f1925;border:1px solid #1e3050;border-radius:12px;padding:18px 20px;margin-bottom:12px;}
+.agent-card{background:#0b1220;border:1px solid #1a2a4a;border-radius:12px;padding:18px 20px;margin-bottom:12px;}
 .agent-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-weight:700;font-size:.95rem;}
 .badge{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;}
 .badge-solver{background:rgba(79,114,245,.15);color:#4f72f5;}
@@ -93,7 +93,7 @@ with st.sidebar:
     claude_avail = shutil.which("claude") is not None
     codex_avail  = shutil.which("codex")  is not None
     st.markdown(f"""
-    <div style='font-size:.78rem;color:#8899bb;background:#0f1925;border:1px solid #1e3050;border-radius:8px;padding:10px 12px;margin-top:4px;line-height:1.8;'>
+    <div style='font-size:.78rem;color:#8899bb;background:#0b1220;border:1px solid #1a2a4a;border-radius:8px;padding:10px 12px;margin-top:4px;line-height:1.8;'>
       <b style='color:#e8e8f0'>CLI status</b><br>
       {"✅" if claude_avail else "❌"} Claude CLI {"(ready)" if claude_avail else "(not installed)"}<br>
       {"✅" if codex_avail  else "❌"} Codex CLI  {"(ready)" if codex_avail  else "(not installed)"}<br>
@@ -114,7 +114,7 @@ with st.sidebar:
 st.markdown("""
 <div class="hero-wrap">
   <div class="hero-logo">3minds</div>
-  <div class="hero-tag">Think. Question.<br><span>Validate.</span></div>
+  <div class="hero-tag">Think. Question. <span>Validate.</span></div>
 </div>
 """, unsafe_allow_html=True)
 

@@ -240,7 +240,7 @@ def call_claude_cli(prompt):
         raise FileNotFoundError("Claude CLI not found. Install it: npm install -g @anthropic-ai/claude-code")
     log("⚡ Calling Claude CLI…", "info")
     result = subprocess.run(
-        [exe, "-p", "--output-format", "stream-json", "--dangerously-skip-permissions"],
+        [exe, "-p", "--output-format", "stream-json", "--verbose", "--dangerously-skip-permissions"],
         input=prompt, capture_output=True, text=True, timeout=180
     )
     text = _parse_cli_output(result.stdout, "claude")

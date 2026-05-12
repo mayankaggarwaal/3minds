@@ -169,7 +169,7 @@ st.markdown("""
 # ── Input ─────────────────────────────────────────────────────────────────────
 problem = st.text_area(
     "What do you want the three minds to deliberate on?",
-    value="I've checked every box—the degree, the SDE role, the extra hours—yet I still feel like I'm just blending into the background. Am I actually lost, or will I ever truly make it?",
+    value="Will AI replace software engineers?",
     height=90
 )
 c1,_ = st.columns([1,3])

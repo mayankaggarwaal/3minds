@@ -7,7 +7,7 @@ Multi-agent deliberation: Solver -> Critic -> Validator
 import json, time, re, subprocess, shutil
 import streamlit as st
 
-st.set_page_config(page_title="3minds", page_icon="🧠", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="3minds", page_icon="🧠", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown("""
 <style>
@@ -123,6 +123,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Input ─────────────────────────────────────────────────────────────────────
+st.markdown("""
+<div style='text-align:center;margin:-8px 0 20px;'>
+  <span style='color:#8899bb;font-size:.82rem;'>
+    ⚙️ Click the <b style='color:#4f72f5'>›</b> arrow on the top-left to open Settings — add your API key and pick models
+  </span>
+</div>
+""", unsafe_allow_html=True)
+
 problem = st.text_area(
     "What do you want the three minds to deliberate on?",
     value="I built 3minds — 3 AI agents that challenge each other to find the best answer. I genuinely want to know: how much of a difference does this actually make for real people?",

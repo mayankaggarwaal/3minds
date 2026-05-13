@@ -1,6 +1,6 @@
 """
 3minds — Streamlit App
-Think. Question. Validate.
+Think. Critic. Validate.
 Multi-agent deliberation: Solver -> Critic -> Validator
 """
 
@@ -162,7 +162,7 @@ with st.expander("⚙️  Settings", expanded=False):
 st.markdown("""
 <div class="hero-wrap">
   <div class="hero-logo">3minds…</div>
-  <div class="hero-tag">Think Question <span class="validate-word">Validate</span></div>
+  <div class="hero-tag">Think Critic <span class="validate-word">Validate</span></div>
 </div>
 """, unsafe_allow_html=True)
 
